@@ -12,7 +12,35 @@
 
 # Logs
 *.log
+logs/cd /mnt/data/full-stack-developer/profile
+cat > .gitignore << 'EOF'
+# Backend
+__pycache__/
+*.pyc
+db.sqlite3
+media/
+staticfiles/
+.env
+backend/.env
+
+# Frontend
+node_modules/
+dist/
+.env.local
+frontend/.env.local
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Logs
+*.log
 logs/
+
+# OS
+Thumbs.db
+EOF
 
 # Temporary files
 *.tmp
