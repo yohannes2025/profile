@@ -1,10 +1,12 @@
+// src/components/Skills.tsx
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { fetchSkills } from "../services/api";
 import { Code, Database, Cloud, Wrench } from "lucide-react";
 
-const categoryIcons = {
+const categoryIcons: Record<string, React.ReactNode> = {
   frontend: <Code size={24} />,
   backend: <Code size={24} />,
   database: <Database size={24} />,
@@ -12,7 +14,7 @@ const categoryIcons = {
   tools: <Wrench size={24} />,
 };
 
-const categoryColors = {
+const categoryColors: Record<string, string> = {
   frontend: "from-rose-500 to-pink-500",
   backend: "from-blue-500 to-cyan-500",
   database: "from-emerald-500 to-teal-500",
@@ -21,6 +23,7 @@ const categoryColors = {
 };
 
 export default function Skills() {
+  const { t } = useTranslation();
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true });
   const { data: skills, isLoading } = useQuery({
     queryKey: ["skills"],
@@ -33,14 +36,6 @@ export default function Skills() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse">
             <div className="h-8 bg-slate-200 dark:bg-slate-700 rounded w-48 mx-auto mb-12"></div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div
-                  key={i}
-                  className="h-32 bg-slate-200 dark:bg-slate-700 rounded-xl"
-                ></div>
-              ))}
-            </div>
           </div>
         </div>
       </div>
@@ -53,6 +48,14 @@ export default function Skills() {
     return acc;
   }, {});
 
+  const categoryNames: Record<string, string> = {
+    frontend: t("skills.frontend"),
+    backend: t("skills.backend"),
+    database: t("skills.database"),
+    devops: t("skills.devops"),
+    tools: t("skills.tools"),
+  };
+
   return (
     <section id="skills" className="py-24 bg-slate-50 dark:bg-slate-900/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,9 +65,11 @@ export default function Skills() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold mb-4">Skills & Technologies</h2>
+          <h2 className="text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+            {t("skills.title")}
+          </h2>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Here are the technologies I work with and my proficiency levels
+            {t("skills.subtitle")}
           </p>
         </motion.div>
 
@@ -80,12 +85,12 @@ export default function Skills() {
               >
                 <div className="flex items-center gap-3 mb-6">
                   <div
-                    className={`p-2 rounded-lg bg-gradient-to-r ${categoryColors[category as keyof typeof categoryColors]} text-white`}
+                    className={`p-2 rounded-lg bg-gradient-to-r ${categoryColors[category] || "from-gray-500 to-gray-600"} text-white`}
                   >
-                    {categoryIcons[category as keyof typeof categoryIcons]}
+                    {categoryIcons[category] || <Code size={24} />}
                   </div>
-                  <h3 className="text-2xl font-semibold capitalize">
-                    {category}
+                  <h3 className="text-2xl font-semibold text-slate-900 dark:text-white capitalize">
+                    {categoryNames[category] || category}
                   </h3>
                 </div>
 
@@ -98,7 +103,9 @@ export default function Skills() {
                       transition={{ delay: index * 0.1 }}
                     >
                       <div className="flex justify-between mb-2">
-                        <span className="font-medium">{skill.name}</span>
+                        <span className="font-medium text-slate-700 dark:text-slate-300">
+                          {skill.name}
+                        </span>
                         <span className="text-cyan-500">
                           {skill.proficiency}%
                         </span>
@@ -110,7 +117,7 @@ export default function Skills() {
                             inView ? { width: `${skill.proficiency}%` } : {}
                           }
                           transition={{ duration: 1, delay: index * 0.1 }}
-                          className={`h-full rounded-full bg-gradient-to-r ${categoryColors[skill.category]}`}
+                          className={`h-full rounded-full bg-gradient-to-r ${categoryColors[skill.category] || "from-gray-500 to-gray-600"}`}
                         />
                       </div>
                     </motion.div>

@@ -1,17 +1,12 @@
+// src/components/About.tsx
 import { motion } from "framer-motion";
-import {
-  Briefcase,
-  GraduationCap,
-  Award,
-  Heart,
-  Code,
-  Database,
-  Cloud,
-} from "lucide-react";
+import { Award, Heart, Code, Database, Cloud } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { fetchExperiences, fetchEducation } from "../services/api";
 
 export default function About() {
+  const { t } = useTranslation();
   const { data: experiences, isLoading: expLoading } = useQuery({
     queryKey: ["experiences"],
     queryFn: fetchExperiences,
@@ -36,10 +31,10 @@ export default function About() {
   }
 
   const stats = [
-    { icon: Code, label: "Projects Completed", value: "10+" },
-    { icon: Database, label: "Databases", value: "5+" },
-    { icon: Cloud, label: "Cloud Deployments", value: "8+" },
-    { icon: Award, label: "Certifications", value: "3" },
+    { icon: Code, label: t("about.projectsCompleted"), value: "10+" },
+    { icon: Database, label: t("about.databases"), value: "5+" },
+    { icon: Cloud, label: t("about.cloudDeployments"), value: "8+" },
+    { icon: Award, label: t("about.certifications"), value: "3" },
   ];
 
   return (
@@ -51,15 +46,15 @@ export default function About() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold mb-4">About Me</h2>
+          <h2 className="text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+            {t("about.title")}
+          </h2>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Get to know me better - my background, experience, and what drives
-            me
+            {t("about.subtitle")}
           </p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* Left Column - Bio */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -67,27 +62,19 @@ export default function About() {
             className="space-y-6"
           >
             <div>
-              <h3 className="text-2xl font-semibold mb-4">Who Am I?</h3>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                I'm a passionate full-stack developer with expertise in building
-                modern, scalable web applications. I love solving complex
-                problems and creating digital experiences that make a
-                difference.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                <Briefcase className="text-cyan-500" /> Work Experience
+              <h3 className="text-2xl font-semibold mb-4 text-slate-900 dark:text-white">
+                {t("about.workExperience")}
               </h3>
               <div className="space-y-4">
                 {experiences?.map((exp: any) => (
                   <div key={exp.id} className="border-l-4 border-cyan-500 pl-4">
-                    <h4 className="font-semibold">{exp.title}</h4>
+                    <h4 className="font-semibold text-slate-900 dark:text-white">
+                      {exp.title}
+                    </h4>
                     <p className="text-cyan-500">{exp.company}</p>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                       {exp.start_date} -{" "}
-                      {exp.current ? "Present" : exp.end_date}
+                      {exp.current ? t("about.present") : exp.end_date}
                     </p>
                     <p className="mt-2 text-slate-600 dark:text-slate-400 text-sm">
                       {exp.description}
@@ -98,7 +85,6 @@ export default function About() {
             </div>
           </motion.div>
 
-          {/* Right Column - Education & Stats */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -106,30 +92,28 @@ export default function About() {
             className="space-y-6"
           >
             <div>
-              <h3 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                <GraduationCap className="text-cyan-500" /> Education
+              <h3 className="text-2xl font-semibold mb-4 text-slate-900 dark:text-white">
+                {t("about.education")}
               </h3>
               <div className="space-y-4">
                 {education?.map((edu: any) => (
                   <div key={edu.id} className="border-l-4 border-cyan-500 pl-4">
-                    <h4 className="font-semibold">{edu.degree}</h4>
+                    <h4 className="font-semibold text-slate-900 dark:text-white">
+                      {edu.degree}
+                    </h4>
                     <p className="text-cyan-500">{edu.institution}</p>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                       {edu.start_year} - {edu.end_year}
                     </p>
-                    {edu.description && (
-                      <p className="mt-2 text-slate-600 dark:text-slate-400 text-sm">
-                        {edu.description}
-                      </p>
-                    )}
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Stats Grid */}
             <div>
-              <h3 className="text-2xl font-semibold mb-4">Quick Stats</h3>
+              <h3 className="text-2xl font-semibold mb-4 text-slate-900 dark:text-white">
+                {t("about.quickStats")}
+              </h3>
               <div className="grid grid-cols-2 gap-4">
                 {stats.map((stat, index) => (
                   <div
@@ -137,7 +121,9 @@ export default function About() {
                     className="bg-gradient-to-br from-cyan-50 to-blue-50 dark:from-cyan-950/20 dark:to-blue-950/20 rounded-xl p-4 text-center"
                   >
                     <stat.icon className="w-8 h-8 text-cyan-500 mx-auto mb-2" />
-                    <div className="text-2xl font-bold">{stat.value}</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                      {stat.value}
+                    </div>
                     <div className="text-sm text-slate-600 dark:text-slate-400">
                       {stat.label}
                     </div>
@@ -146,14 +132,12 @@ export default function About() {
               </div>
             </div>
 
-            {/* Passion Statement */}
             <div className="bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl p-6 text-white">
               <Heart className="w-8 h-8 mb-2" />
-              <h3 className="text-xl font-semibold mb-2">My Passion</h3>
-              <p className="opacity-90">
-                I'm passionate about creating technology that helps people and
-                makes the web a better place.
-              </p>
+              <h3 className="text-xl font-semibold mb-2">
+                {t("about.myPassion")}
+              </h3>
+              <p className="opacity-90">{t("about.passionText")}</p>
             </div>
           </motion.div>
         </div>

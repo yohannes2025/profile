@@ -1,8 +1,24 @@
 // frontend/src/components/Hero.tsx
 import { motion } from "framer-motion";
 import { Download, ArrowRight, Github, Linkedin, Mail } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useEffect } from "react";
 
 export default function Hero() {
+  const { t, i18n } = useTranslation();
+
+  // Force re-render when language changes
+  useEffect(() => {
+    console.log("Hero - Language changed to:", i18n.language);
+  }, [i18n.language]);
+
+  // Get the correct CV based on language
+  const getCVPath = () => {
+    return i18n.language === "de"
+      ? "/cv/CV_Yohannes_Tekle_DE.pdf"
+      : "/cv/CV_Yohannes_Tekle_EN.pdf";
+  };
+
   return (
     <section id="home" className="min-h-screen flex items-center pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -19,7 +35,7 @@ export default function Hero() {
               transition={{ delay: 0.2 }}
               className="text-cyan-500 dark:text-cyan-400 font-semibold mb-4"
             >
-              Full-Stack Developer
+              {t("hero.title")}
             </motion.p>
 
             <motion.h1
@@ -28,10 +44,10 @@ export default function Hero() {
               transition={{ delay: 0.3 }}
               className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 text-slate-900 dark:text-white"
             >
-              Building modern
+              {t("hero.heading")}
               <span className="text-cyan-500 dark:text-cyan-400">
                 {" "}
-                web experiences
+                {t("hero.headingHighlight")}
               </span>
             </motion.h1>
 
@@ -41,9 +57,7 @@ export default function Hero() {
               transition={{ delay: 0.4 }}
               className="text-lg text-slate-600 dark:text-slate-400 mb-8 max-w-lg"
             >
-              I design and develop scalable full-stack applications using React,
-              Django, and modern web technologies. Focused on creating clean,
-              responsive, and user-friendly digital experiences.
+              {t("hero.description")}
             </motion.p>
 
             <motion.div
@@ -58,17 +72,17 @@ export default function Hero() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                View Projects <ArrowRight size={18} />
+                {t("hero.viewProjects")} <ArrowRight size={18} />
               </motion.a>
 
               <motion.a
-                href="/resume.pdf"
+                href={getCVPath()}
                 download
                 className="px-6 py-3 border border-slate-300 dark:border-slate-700 rounded-xl font-medium hover:border-cyan-500 hover:text-cyan-500 transition-colors flex items-center gap-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Download CV <Download size={18} />
+                {t("hero.downloadCV")} <Download size={18} />
               </motion.a>
             </motion.div>
 
@@ -111,7 +125,6 @@ export default function Hero() {
             className="relative flex justify-center"
           >
             <div className="relative w-80 h-80">
-              {/* Animated Gradient Ring */}
               <motion.div
                 className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 opacity-75"
                 animate={{
@@ -125,57 +138,55 @@ export default function Hero() {
                 }}
               />
 
-              {/* Professional Avatar Image */}
-              <div className="absolute inset-2 rounded-full overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900">
-                {/* Professional placeholder image - replace with your actual photo */}
+              <div className="absolute inset-2 rounded-full overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900 shadow-xl">
                 <img
-                  src="https://ui-avatars.com/api/?background=0D9488&color=fff&size=300&name=Yohannes&font-size=0.5&rounded=true&bold=true&length=2"
-                  alt="Yohannes Tekle"
+                  src="/images/profile.png"
+                  alt="Yohannes Tekle - Full Stack Developer"
                   className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src =
+                      "https://ui-avatars.com/api/?background=0D9488&color=fff&size=300&name=Yohannes&font-size=0.5&rounded=true&bold=true&length=2";
+                  }}
                 />
               </div>
 
-              {/* Floating Badge - React Expert */}
               <motion.div
                 className="absolute -top-4 -right-4 bg-white dark:bg-slate-800 rounded-full px-4 py-2 shadow-lg z-10"
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
                 <span className="text-sm font-semibold text-slate-800 dark:text-white">
-                  ⚛️ React Expert
+                  ⚛️ {t("hero.reactExpert")}
                 </span>
               </motion.div>
 
-              {/* Floating Badge - Django Pro */}
               <motion.div
                 className="absolute -bottom-4 -left-4 bg-white dark:bg-slate-800 rounded-full px-4 py-2 shadow-lg z-10"
                 animate={{ y: [0, 10, 0] }}
                 transition={{ duration: 3, repeat: Infinity, delay: 1 }}
               >
                 <span className="text-sm font-semibold text-slate-800 dark:text-white">
-                  🐍 Django Pro
+                  🐍 {t("hero.djangoPro")}
                 </span>
               </motion.div>
 
-              {/* Floating Badge - 5+ Years Experience */}
               <motion.div
                 className="absolute -top-2 -left-6 bg-cyan-500 rounded-full px-3 py-1 shadow-lg z-10"
                 animate={{ x: [0, -5, 0] }}
                 transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
               >
                 <span className="text-xs font-semibold text-white">
-                  5+ Years
+                  💼 {t("hero.yearsExp")}
                 </span>
               </motion.div>
 
-              {/* Floating Badge - Available */}
               <motion.div
                 className="absolute -bottom-2 -right-6 bg-green-500 rounded-full px-3 py-1 shadow-lg z-10"
                 animate={{ x: [0, 5, 0] }}
                 transition={{ duration: 2, repeat: Infinity, delay: 1.5 }}
               >
                 <span className="text-xs font-semibold text-white">
-                  Available
+                  ✅ {t("hero.available")}
                 </span>
               </motion.div>
             </div>

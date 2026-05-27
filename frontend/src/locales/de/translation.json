@@ -1,0 +1,112 @@
+{
+  "nav": {
+    "home": "Startseite",
+    "about": "Über mich",
+    "skills": "Fähigkeiten",
+    "projects": "Projekte",
+    "testimonials": "Referenzen",
+    "blog": "Blog",
+    "contact": "Kontakt"
+  },
+  "hero": {
+    "title": "Full-Stack Entwickler",
+    "heading": "Moderne",
+    "headingHighlight": "Web-Erlebnisse",
+    "description": "Ich entwickle skalierbare Full-Stack-Anwendungen mit React, Django und modernen Webtechnologien. Fokussiert auf saubere, responsive und benutzerfreundliche digitale Erlebnisse.",
+    "viewProjects": "Projekte ansehen",
+    "downloadCV": "Lebenslauf herunterladen",
+    "reactExpert": "React Experte",
+    "djangoPro": "Django Profi",
+    "yearsExp": "5+ Jahre",
+    "available": "Verfügbar"
+  },
+  "about": {
+    "present": "Heute",
+    "title": "Über mich",
+    "subtitle": "Lernen Sie mich besser kennen - mein Hintergrund, meine Erfahrung und was mich antreibt",
+    "workExperience": "Berufserfahrung",
+    "education": "Ausbildung",
+    "quickStats": "Statistiken",
+    "projectsCompleted": "Abgeschlossene Projekte",
+    "databases": "Datenbanken",
+    "cloudDeployments": "Cloud-Deployments",
+    "certifications": "Zertifizierungen",
+    "myPassion": "Meine Leidenschaft",
+    "passionText": "Ich bin leidenschaftlich daran interessiert, Technologie zu schaffen, die Menschen hilft und das Web zu einem besseren Ort macht."
+  },
+  "skills": {
+    "title": "Fähigkeiten & Technologien",
+    "subtitle": "Hier sind die Technologien, mit denen ich arbeite und meine Kenntnisstufen",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "database": "Datenbank",
+    "devops": "DevOps",
+    "tools": "Werkzeuge"
+  },
+  "projects": {
+    "title": "Ausgewählte Projekte",
+    "subtitle": "Hier sind einige meiner aktuellen Projekte, die meine Fähigkeiten und Erfahrung zeigen",
+    "liveDemo": "Live-Demo",
+    "github": "GitHub",
+    "details": "Details",
+    "noProjects": "Noch keine Projekte",
+    "noProjectsText": "Besuchen Sie bald wieder für meine neuesten Arbeiten!",
+    "error": "Projekte konnten nicht geladen werden",
+    "errorText": "Bitte aktualisieren Sie die Seite oder versuchen Sie es später erneut."
+  },
+  "testimonials": {
+    "at": "bei",
+    "title": "Was Kunden sagen",
+    "subtitle": "Referenzen von Kunden und Kollegen, mit denen ich zusammengearbeitet habe",
+    "noTestimonials": "Noch keine Referenzen",
+    "noTestimonialsText": "Besuchen Sie uns bald wieder für Kundenfeedback und Erfolgsgeschichten!"
+  },
+  "blog": {
+    "title": "Neueste Blogbeiträge",
+    "subtitle": "Gedanken, Tutorials und Einblicke in die Webentwicklung",
+    "readMore": "Weiterlesen",
+    "noPosts": "Noch keine Blogbeiträge",
+    "noPostsText": "Besuchen Sie uns bald wieder für Tutorials, Einblicke und Updates!"
+  },
+  "contact": {
+    "title": "Lassen Sie uns zusammenarbeiten",
+    "subtitle": "Ich bin immer offen für neue Projekte, kreative Ideen oder Möglichkeiten",
+    "getInTouch": "Kontaktieren Sie mich",
+    "email": "E-Mail",
+    "phone": "Telefon",
+    "location": "Standort",
+    "locationValue": "Köln, Deutschland",
+    "availableForWork": "Für Arbeit verfügbar",
+    "availableText": "Ich bin derzeit für freiberufliche Arbeit und Vollzeitstellen verfügbar.",
+    "name": "Name",
+    "yourName": "Ihr Name",
+    "emailLabel": "E-Mail",
+    "yourEmail": "ihre@email.com",
+    "subject": "Betreff",
+    "yourSubject": "Worum geht es?",
+    "message": "Nachricht",
+    "yourMessage": "Erzählen Sie mir von Ihrem Projekt...",
+    "sendMessage": "Nachricht senden",
+    "sending": "Wird gesendet...",
+    "success": "Nachricht erfolgreich gesendet! Sie erhalten in Kürze eine Bestätigungs-E-Mail.",
+    "error": "Fehler beim Senden der Nachricht. Bitte versuchen Sie es erneut.",
+    "nameRequired": "Name muss mindestens 2 Zeichen lang sein",
+    "emailRequired": "Ungültige E-Mail-Adresse",
+    "subjectRequired": "Betreff muss mindestens 5 Zeichen lang sein",
+    "messageRequired": "Nachricht muss mindestens 10 Zeichen lang sein"
+  },
+  "footer": {
+    "rights": "Alle Rechte vorbehalten",
+    "madeWith": "Gemacht mit",
+    "using": "mit React & Django"
+  },
+  "language": {
+    "english": "Englisch",
+    "german": "Deutsch"
+  },
+  "cv": {
+    "download": "Lebenslauf herunterladen",
+    "english": "Englischer Lebenslauf",
+    "german": "Deutscher Lebenslauf"
+  }
+}

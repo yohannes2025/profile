@@ -1,0 +1,111 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "skills": "Skills",
+    "projects": "Projects",
+    "testimonials": "Testimonials",
+    "blog": "Blog",
+    "contact": "Contact"
+  },
+  "hero": {
+    "title": "Full-Stack Developer",
+    "heading": "Building modern",
+    "headingHighlight": "web experiences",
+    "description": "I design and develop scalable full-stack applications using React, Django, and modern web technologies. Focused on creating clean, responsive, and user-friendly digital experiences.",
+    "viewProjects": "View Projects",
+    "downloadCV": "Download CV",
+    "reactExpert": "React Expert",
+    "djangoPro": "Django Pro",
+    "yearsExp": "5+ Years",
+    "available": "Available"
+  },
+  "about": {
+    "present": "Present",
+    "title": "About Me",
+    "subtitle": "Get to know me better - my background, experience, and what drives me",
+    "workExperience": "Work Experience",
+    "education": "Education",
+    "quickStats": "Quick Stats",
+    "projectsCompleted": "Projects Completed",
+    "databases": "Databases",
+    "cloudDeployments": "Cloud Deployments",
+    "certifications": "Certifications",
+    "myPassion": "My Passion",
+    "passionText": "I'm passionate about creating technology that helps people and makes the web a better place."
+  },
+  "skills": {
+    "title": "Skills & Technologies",
+    "subtitle": "Here are the technologies I work with and my proficiency levels",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "database": "Database",
+    "devops": "DevOps",
+    "tools": "Tools"
+  },
+  "projects": {
+    "title": "Featured Projects",
+    "subtitle": "Here are some of my recent projects that showcase my skills and experience",
+    "liveDemo": "Live Demo",
+    "github": "GitHub",
+    "details": "Details",
+    "noProjects": "No projects found. Check back soon!",
+    "error": "Unable to load projects",
+    "errorText": "Please refresh the page or try again later."
+  },
+  "testimonials": {
+    "at": "at",
+    "title": "What Clients Say",
+    "subtitle": "Testimonials from clients and colleagues I've worked with",
+    "noTestimonials": "No Testimonials Yet",
+    "noTestimonialsText": "Check back soon for client feedback and success stories!"
+  },
+  "blog": {
+    "title": "Latest from Blog",
+    "subtitle": "Thoughts, tutorials, and insights about web development",
+    "readMore": "Read More",
+    "noPosts": "No Blog Posts Yet",
+    "noPostsText": "Check back soon for tutorials, insights, and updates!"
+  },
+  "contact": {
+    "title": "Let's Work Together",
+    "subtitle": "I'm always open to discussing new projects, creative ideas, or opportunities",
+    "getInTouch": "Get in Touch",
+    "email": "Email",
+    "phone": "Phone",
+    "location": "Location",
+    "locationValue": "Cologne, Germany",
+    "availableForWork": "Available for Work",
+    "availableText": "I'm currently available for freelance work and full-time opportunities.",
+    "name": "Name",
+    "yourName": "Your name",
+    "emailLabel": "Email",
+    "yourEmail": "your@email.com",
+    "subject": "Subject",
+    "yourSubject": "What's this about?",
+    "message": "Message",
+    "yourMessage": "Tell me about your project...",
+    "sendMessage": "Send Message",
+    "sending": "Sending...",
+    "success": "Message sent successfully! You'll receive a confirmation email shortly.",
+    "error": "Failed to send message. Please try again.",
+    "nameRequired": "Name must be at least 2 characters",
+    "emailRequired": "Invalid email address",
+    "subjectRequired": "Subject must be at least 5 characters",
+    "messageRequired": "Message must be at least 10 characters"
+  },
+  "footer": {
+    "rights": "All rights reserved",
+    "madeWith": "Made with",
+    "using": "using React & Django"
+  },
+  "language": {
+    "english": "English",
+    "german": "Deutsch"
+  },
+  "cv": {
+    "download": "Download CV",
+    "english": "English CV",
+    "german": "German CV"
+  }
+}

@@ -2,15 +2,17 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Menu, X, Moon, Sun } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 const navLinks = [
-  { name: "Home", href: "#home" },
-  { name: "About", href: "#about" },
-  { name: "Skills", href: "#skills" },
-  { name: "Projects", href: "#projects" },
-  { name: "Testimonials", href: "#testimonials" },
-  { name: "Blog", href: "#blog" },
-  { name: "Contact", href: "#contact" },
+  { name: "home", href: "#home" },
+  { name: "about", href: "#about" },
+  { name: "skills", href: "#skills" },
+  { name: "projects", href: "#projects" },
+  { name: "testimonials", href: "#testimonials" },
+  { name: "blog", href: "#blog" },
+  { name: "contact", href: "#contact" },
 ];
 
 interface NavbarProps {
@@ -21,6 +23,7 @@ interface NavbarProps {
 export default function Navbar({ theme, toggleTheme }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,6 +46,7 @@ export default function Navbar({ theme, toggleTheme }: NavbarProps) {
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
+          {/* Logo */}
           <motion.a
             href="#home"
             className="text-2xl font-bold text-slate-900 dark:text-white"
@@ -60,9 +64,14 @@ export default function Navbar({ theme, toggleTheme }: NavbarProps) {
                 className="text-slate-700 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors"
                 whileHover={{ y: -2 }}
               >
-                {link.name}
+                {t(`nav.${link.name}`)}
               </motion.a>
             ))}
+
+            {/* Language Switcher */}
+            <LanguageSwitcher />
+
+            {/* Theme Toggle */}
             <motion.button
               onClick={toggleTheme}
               className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
@@ -73,8 +82,9 @@ export default function Navbar({ theme, toggleTheme }: NavbarProps) {
             </motion.button>
           </div>
 
-          {/* Mobile Navigation Button */}
+          {/* Mobile Navigation Buttons */}
           <div className="md:hidden flex items-center gap-4">
+            <LanguageSwitcher />
             <motion.button
               onClick={toggleTheme}
               className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
@@ -107,7 +117,7 @@ export default function Navbar({ theme, toggleTheme }: NavbarProps) {
                 className="block py-2 text-slate-700 dark:text-slate-300 hover:text-cyan-500 dark:hover:text-cyan-400"
                 onClick={() => setIsOpen(false)}
               >
-                {link.name}
+                {t(`nav.${link.name}`)}
               </a>
             ))}
           </motion.div>

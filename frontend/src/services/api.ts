@@ -1,3 +1,4 @@
+// src/services/api.ts
 import axios from "axios";
 
 const API_BASE_URL =
@@ -22,11 +23,10 @@ api.interceptors.response.use(
 export const fetchProjects = async () => {
   try {
     const response = await api.get("/projects/");
-    // Ensure we return an array
     return Array.isArray(response.data) ? response.data : [];
   } catch (error) {
     console.error("Error fetching projects:", error);
-    return []; // Return empty array on error
+    return [];
   }
 };
 
@@ -74,7 +74,6 @@ export const fetchBlogPosts = async () => {
   try {
     const response = await api.get("/blog/");
     const data = response.data;
-    // Handle paginated response
     if (data && typeof data === "object") {
       if (Array.isArray(data.results)) return data.results;
       if (Array.isArray(data)) return data;

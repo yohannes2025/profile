@@ -1,11 +1,15 @@
+// src/components/Contact.tsx
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "react-toastify";
-import emailjs from "@emailjs/browser";
+import axios from "axios";
 import { Send, Mail, Phone, MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -17,6 +21,7 @@ const contactSchema = z.object({
 type ContactForm = z.infer<typeof contactSchema>;
 
 export default function Contact() {
+  const { t, i18n } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
     register,
@@ -29,32 +34,35 @@ export default function Contact() {
 
   const onSubmit = async (data: ContactForm) => {
     setIsSubmitting(true);
-    console.log("Sending email with:", {
-      service_id: import.meta.env.VITE_EMAILJS_SERVICE_ID,
-      template_id: import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
-      data: {
-        from_name: data.name,
-        from_email: data.email,
-        subject: data.subject,
-        message: data.message,
-      },
-    });
+
     try {
-      await emailjs.send(
-        import.meta.env.VITE_EMAILJS_SERVICE_ID,
-        import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      const response = await axios.post(
+        `${API_URL}/contact/`,
         {
-          from_name: data.name,
-          from_email: data.email,
+          name: data.name,
+          email: data.email,
           subject: data.subject,
           message: data.message,
         },
-        import.meta.env.VITE_EMAILJS_PUBLIC_KEY,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Accept-Language": i18n.language,
+          },
+        },
       );
-      toast.success("Message sent successfully!");
-      reset();
-    } catch (error) {
-      toast.error("Failed to send message. Please try again.");
+
+      if (response.status === 201) {
+        toast.success(t("contact.success"));
+        reset();
+      }
+    } catch (error: any) {
+      console.error("Error sending message:", error);
+      if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error(t("contact.error"));
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -63,17 +71,22 @@ export default function Contact() {
   const contactInfo = [
     {
       icon: Mail,
-      label: "Email",
+      label: t("contact.email"),
       value: "yohannes.m.tekle@gmail.com",
       link: "mailto:yohannes.m.tekle@gmail.com",
     },
     {
       icon: Phone,
-      label: "Phone",
+      label: t("contact.phone"),
       value: "+49 176 45170168",
       link: "tel:+4917645170168",
     },
-    { icon: MapPin, label: "Location", value: "Cologne, Germany", link: null },
+    {
+      icon: MapPin,
+      label: t("contact.location"),
+      value: i18n.language === "de" ? "Köln, Deutschland" : "Cologne, Germany",
+      link: null,
+    },
   ];
 
   return (
@@ -85,15 +98,15 @@ export default function Contact() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold mb-4">Let's Work Together</h2>
+          <h2 className="text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+            {t("contact.title")}
+          </h2>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            I'm always open to discussing new projects, creative ideas, or
-            opportunities
+            {t("contact.subtitle")}
           </p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12">
-          {/* Contact Info */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -101,7 +114,9 @@ export default function Contact() {
             className="space-y-6"
           >
             <div className="bg-white dark:bg-slate-800 rounded-2xl p-8 shadow-lg">
-              <h3 className="text-2xl font-semibold mb-6">Get in Touch</h3>
+              <h3 className="text-2xl font-semibold mb-6 text-slate-900 dark:text-white">
+                {t("contact.getInTouch")}
+              </h3>
               <div className="space-y-4">
                 {contactInfo.map((item) => (
                   <div key={item.label} className="flex items-center gap-4">
@@ -132,12 +147,9 @@ export default function Contact() {
 
             <div className="bg-gradient-to-r from-cyan-500 to-blue-500 rounded-2xl p-8 text-white">
               <h3 className="text-2xl font-semibold mb-2">
-                Available for Work
+                {t("contact.availableForWork")}
               </h3>
-              <p className="mb-4 opacity-90">
-                I'm currently available for freelance work and full-time
-                opportunities.
-              </p>
+              <p className="mb-4 opacity-90">{t("contact.availableText")}</p>
               <div className="flex gap-2">
                 {["React", "Django", "TypeScript"].map((tech) => (
                   <span
@@ -151,7 +163,6 @@ export default function Contact() {
             </div>
           </motion.div>
 
-          {/* Contact Form */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -164,66 +175,77 @@ export default function Contact() {
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
-                    Name
+                    {t("contact.name")}
                   </label>
                   <input
                     {...register("name")}
                     className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
-                    placeholder="Your name"
+                    placeholder={t("contact.yourName")}
                   />
                   {errors.name && (
                     <p className="mt-1 text-sm text-red-500">
-                      {errors.name.message}
+                      {errors.name.message ===
+                      "Name must be at least 2 characters"
+                        ? t("contact.nameRequired")
+                        : errors.name.message}
                     </p>
                   )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
-                    Email
+                    {t("contact.emailLabel")}
                   </label>
                   <input
                     {...register("email")}
                     type="email"
                     className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
-                    placeholder="your@email.com"
+                    placeholder={t("contact.yourEmail")}
                   />
                   {errors.email && (
                     <p className="mt-1 text-sm text-red-500">
-                      {errors.email.message}
+                      {errors.email.message === "Invalid email address"
+                        ? t("contact.emailRequired")
+                        : errors.email.message}
                     </p>
                   )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
-                    Subject
+                    {t("contact.subject")}
                   </label>
                   <input
                     {...register("subject")}
                     className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition"
-                    placeholder="What's this about?"
+                    placeholder={t("contact.yourSubject")}
                   />
                   {errors.subject && (
                     <p className="mt-1 text-sm text-red-500">
-                      {errors.subject.message}
+                      {errors.subject.message ===
+                      "Subject must be at least 5 characters"
+                        ? t("contact.subjectRequired")
+                        : errors.subject.message}
                     </p>
                   )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium mb-2 text-slate-700 dark:text-slate-300">
-                    Message
+                    {t("contact.message")}
                   </label>
                   <textarea
                     {...register("message")}
                     rows={5}
                     className="w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition resize-none"
-                    placeholder="Tell me about your project..."
+                    placeholder={t("contact.yourMessage")}
                   />
                   {errors.message && (
                     <p className="mt-1 text-sm text-red-500">
-                      {errors.message.message}
+                      {errors.message.message ===
+                      "Message must be at least 10 characters"
+                        ? t("contact.messageRequired")
+                        : errors.message.message}
                     </p>
                   )}
                 </div>
@@ -235,7 +257,9 @@ export default function Contact() {
                   whileTap={{ scale: 0.98 }}
                   className="w-full py-3 bg-gradient-to-r from-cyan-500 to-blue-500 text-white rounded-xl font-medium flex items-center justify-center gap-2 hover:shadow-lg transition-all disabled:opacity-50"
                 >
-                  {isSubmitting ? "Sending..." : "Send Message"}
+                  {isSubmitting
+                    ? t("contact.sending")
+                    : t("contact.sendMessage")}
                   <Send size={18} />
                 </motion.button>
               </div>

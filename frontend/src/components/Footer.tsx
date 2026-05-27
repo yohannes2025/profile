@@ -1,6 +1,9 @@
+// frontend/src/components/Footer.tsx
 import { Github, Linkedin, Twitter, Mail, Heart } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
+  const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -8,7 +11,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-500 dark:text-slate-400 text-sm">
-            © {currentYear} Yohannes Tekle. All rights reserved.
+            © {currentYear} Yohannes Tekle. {t("footer.rights")}
           </p>
 
           <div className="flex gap-4">
@@ -37,7 +40,7 @@ export default function Footer() {
               <Twitter size={20} />
             </a>
             <a
-              href="mailto:yohannes@example.com"
+              href="mailto:yohannes.m.tekle@gmail.com"
               className="text-slate-500 hover:text-cyan-500 transition-colors"
             >
               <Mail size={20} />
@@ -45,8 +48,8 @@ export default function Footer() {
           </div>
 
           <p className="text-slate-500 dark:text-slate-400 text-sm flex items-center gap-1">
-            Made with <Heart size={14} className="text-red-500" /> using React &
-            Django
+            {t("footer.madeWith")} <Heart size={14} className="text-red-500" />{" "}
+            {t("footer.using")}
           </p>
         </div>
       </div>

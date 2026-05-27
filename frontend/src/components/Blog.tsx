@@ -1,7 +1,8 @@
-// src/components/Blog.tsx
+// frontend/src/components/Blog.tsx
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface BlogPost {
   id: number;
@@ -16,6 +17,7 @@ interface BlogPost {
 }
 
 export default function Blog() {
+  const { t } = useTranslation();
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,7 +26,6 @@ export default function Blog() {
       try {
         const response = await fetch("http://localhost:8000/api/blog/");
         const data = await response.json();
-        // Handle paginated response or array
         const postsData = data.results || data || [];
         setPosts(Array.isArray(postsData) ? postsData : []);
       } catch (error) {
@@ -52,15 +53,14 @@ export default function Blog() {
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold mb-4 text-slate-900 dark:text-white">
-            Latest from Blog
+            {t("blog.title")}
           </h2>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Thoughts, tutorials, and insights about web development
+            {t("blog.subtitle")}
           </p>
         </motion.div>
 
         {loading ? (
-          // Loading skeleton
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
               <div
@@ -78,7 +78,6 @@ export default function Blog() {
             ))}
           </div>
         ) : posts.length === 0 ? (
-          // Empty state - no blog posts yet
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -87,14 +86,13 @@ export default function Blog() {
           >
             <div className="text-6xl mb-4">📝</div>
             <h3 className="text-2xl font-semibold mb-2 text-slate-900 dark:text-white">
-              No Blog Posts Yet
+              {t("blog.noPosts")}
             </h3>
             <p className="text-slate-600 dark:text-slate-400">
-              Check back soon for tutorials, insights, and updates!
+              {t("blog.noPostsText")}
             </p>
           </motion.div>
         ) : (
-          // Display blog posts
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {posts.slice(0, 3).map((post, index) => (
               <motion.article
@@ -118,10 +116,10 @@ export default function Blog() {
                 <div className="p-6">
                   <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mb-3">
                     <span className="flex items-center gap-1">
-                      <Calendar size={14} /> {post.formatted_date || "Recent"}
+                      <Calendar size={14} /> {post.formatted_date}
                     </span>
                     <span className="flex items-center gap-1">
-                      <Clock size={14} /> {post.reading_time || "3 min read"}
+                      <Clock size={14} /> {post.reading_time}
                     </span>
                   </div>
                   <h3 className="text-xl font-semibold mb-2 line-clamp-2">
@@ -149,7 +147,7 @@ export default function Blog() {
                     href={`/blog/${post.slug}`}
                     className="inline-flex items-center gap-2 text-cyan-500 hover:text-cyan-600 font-medium"
                   >
-                    Read More <ArrowRight size={16} />
+                    {t("blog.readMore")} <ArrowRight size={16} />
                   </a>
                 </div>
               </motion.article>

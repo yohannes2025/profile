@@ -1,16 +1,17 @@
-// src/components/Testimonials.tsx
+// frontend/src/components/Testimonials.tsx
 import { motion } from "framer-motion";
 import { Star, Quote } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import { fetchTestimonials } from "../services/api";
 
 export default function Testimonials() {
+  const { t } = useTranslation();
   const { data: testimonials, isLoading } = useQuery({
     queryKey: ["testimonials"],
     queryFn: fetchTestimonials,
   });
 
-  // Always show the section, even when loading
   if (isLoading) {
     return (
       <section id="testimonials" className="py-24">
@@ -24,7 +25,6 @@ export default function Testimonials() {
     );
   }
 
-  // Get testimonials array safely
   const testimonialsArray = Array.isArray(testimonials) ? testimonials : [];
 
   return (
@@ -41,15 +41,14 @@ export default function Testimonials() {
           className="text-center mb-12"
         >
           <h2 className="text-4xl font-bold mb-4 text-slate-900 dark:text-white">
-            What Clients Say
+            {t("testimonials.title")}
           </h2>
           <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-            Testimonials from clients and colleagues I've worked with
+            {t("testimonials.subtitle")}
           </p>
         </motion.div>
 
         {testimonialsArray.length === 0 ? (
-          // Show a friendly message when no testimonials exist
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -58,10 +57,10 @@ export default function Testimonials() {
           >
             <div className="text-6xl mb-4">⭐</div>
             <h3 className="text-2xl font-semibold mb-2 text-slate-900 dark:text-white">
-              No Testimonials Yet
+              {t("testimonials.noTestimonials")}
             </h3>
             <p className="text-slate-600 dark:text-slate-400">
-              Check back soon for client feedback and success stories!
+              {t("testimonials.noTestimonialsText")}
             </p>
           </motion.div>
         ) : (
@@ -94,7 +93,8 @@ export default function Testimonials() {
                     </h4>
                     <p className="text-sm text-slate-500 dark:text-slate-400">
                       {testimonial.position}{" "}
-                      {testimonial.company && `at ${testimonial.company}`}
+                      {testimonial.company &&
+                        `${t("testimonials.at")} ${testimonial.company}`}
                     </p>
                   </div>
                 </div>

@@ -1,6 +1,9 @@
+// src/contexts/AuthContext.tsx
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
 interface User {
   id: number;
@@ -26,8 +29,6 @@ interface AuthContextType {
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
