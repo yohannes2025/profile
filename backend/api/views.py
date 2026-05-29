@@ -420,4 +420,5 @@ def recent_blog_posts(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def health_check(request):
-    return Response({'status': 'healthy'})
+    """Health check endpoint for Render"""
+    return Response({'status': 'healthy', 'timestamp': datetime.datetime.now().isoformat()})

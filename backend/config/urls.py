@@ -5,6 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from api.views import recent_blog_posts, health_check  # Add health_check here
 
 
 def api_root(request):
@@ -23,6 +24,8 @@ def api_root(request):
             'experiences': '/api/experiences/',
             'education': '/api/education/',
             'blog': '/api/blog/',
+            'recent_posts': '/api/recent-posts/',
+            'health': '/healthz/',
         },
         'documentation': 'Visit /api/docs/ for interactive API documentation'
     })
@@ -31,12 +34,13 @@ def api_root(request):
 urlpatterns = [
     path('', api_root, name='api-root'),
     path('admin/', admin.site.urls),
+    path('healthz/', health_check, name='health-check'),  # Add this line
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/users/', include('users.urls')),
-    path('api/', include('api.urls')),  # This includes projects, skills, testimonials, etc.
+    path('api/', include('api.urls')),
     path('api/blog/', include('blog.urls')),
-    
+    path('api/recent-posts/', recent_blog_posts, name='recent-posts'),
 ]
 
 if settings.DEBUG:
