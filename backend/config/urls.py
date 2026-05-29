@@ -36,6 +36,7 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
     path('api/', include('api.urls')),  # This includes projects, skills, testimonials, etc.
     path('api/blog/', include('blog.urls')),
+    
 ]
 
 if settings.DEBUG:
