@@ -31,6 +31,8 @@ def api_root(request):
     })
 
 
+# backend/config/urls.py
+
 urlpatterns = [
     path('', api_root, name='api-root'),
     path('admin/', admin.site.urls),
@@ -39,12 +41,12 @@ urlpatterns = [
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/users/', include('users.urls')),
     
-    # 1. Point the bare '/api/' path to display your endpoint guide
-    path('api/', api_root, name='api-index'), 
-    
-    # 2. Keep including your sub-routes as usual
-    path('api/', include('api.urls')), 
-    
+    # --- Strict Catchers for the Base API Route ---
+    path('api', api_root, name='api-root-noslash'),  # Catches exactly /api
+    path('api/', api_root, name='api-root-slash'),   # Catches exactly /api/
+    # ----------------------------------------------
+
+    path('api/', include('api.urls')),
     path('api/blog/', include('blog.urls')),
     path('api/recent-posts/', recent_blog_posts, name='recent-posts'),
 ]
