@@ -1,3 +1,4 @@
+# users/serializers.py
 from rest_framework import serializers
 from django.contrib.auth import authenticate, get_user_model
 from django.contrib.auth.password_validation import validate_password
@@ -6,6 +7,9 @@ from django.utils import timezone
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User, UserProfile, UserSession, UserActivityLog, EmailVerification, PasswordReset
 import uuid
+
+# Import extend_schema_field to resolve documentation types
+from drf_spectacular.utils import extend_schema_field
 
 User = get_user_model()
 
@@ -91,13 +95,18 @@ class UserSerializer(serializers.ModelSerializer):
             'profile_completion', 'date_joined', 'last_login', 'created_at'
         ]
         read_only_fields = ['id', 'is_email_verified', 'profile_views', 'date_joined', 'last_login', 'created_at']
+        # Explicit unique schema definition target name
+        ref_name = 'AppUserSerializer'
     
+    @extend_schema_field(str)
     def get_full_name(self, obj):
         return obj.get_full_name()
     
+    @extend_schema_field(str)
     def get_initials(self, obj):
         return obj.get_initials()
     
+    @extend_schema_field(int)
     def get_profile_completion(self, obj):
         return obj.get_profile_completion_percentage()
 
@@ -210,6 +219,7 @@ class UserActivityLogSerializer(serializers.ModelSerializer):
         fields = ['id', 'activity_type', 'description', 'created_at', 'formatted_time']
         read_only_fields = ['id', 'created_at']
     
+    @extend_schema_field(str)
     def get_formatted_time(self, obj):
         return obj.created_at.strftime("%B %d, %Y at %I:%M %p")
 

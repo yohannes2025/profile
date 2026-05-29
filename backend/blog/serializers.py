@@ -9,6 +9,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'email']
+        # Explicit unique schema definition target name
+        ref_name = 'BlogAuthorSerializer'
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -153,9 +155,10 @@ class BlogPostDetailSerializer(serializers.ModelSerializer):
 
 
 class BlogPostCreateUpdateSerializer(serializers.ModelSerializer):
-    tags = serializers.ListField(
-        child=serializers.CharField(),
-        write_only=True,
+    tags = serializers.SlugRelatedField(
+        many=True,
+        slug_field='name',
+        queryset=Tag.objects.all(),
         required=False
     )
     
@@ -170,12 +173,8 @@ class BlogPostCreateUpdateSerializer(serializers.ModelSerializer):
         tags_data = validated_data.pop('tags', [])
         blog_post = BlogPost.objects.create(**validated_data)
         
-        for tag_name in tags_data:
-            tag, created = Tag.objects.get_or_create(
-                name=tag_name.lower(),
-                defaults={'slug': tag_name.lower().replace(' ', '-')}
-            )
-            blog_post.tags.add(tag)
+        for tag_instance in tags_data:
+            blog_post.tags.add(tag_instance)
         
         return blog_post
     
@@ -187,13 +186,7 @@ class BlogPostCreateUpdateSerializer(serializers.ModelSerializer):
         instance.save()
         
         if tags_data is not None:
-            instance.tags.clear()
-            for tag_name in tags_data:
-                tag, created = Tag.objects.get_or_create(
-                    name=tag_name.lower(),
-                    defaults={'slug': tag_name.lower().replace(' ', '-')}
-                )
-                instance.tags.add(tag)
+            instance.tags.set(tags_data)
         
         return instance
 

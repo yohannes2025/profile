@@ -8,11 +8,21 @@ from django.core.mail import send_mail
 from django.conf import settings
 from celery import shared_task
 import datetime
+
+# Internal app models and serializers
 from .models import Project, Skill, Testimonial, Experience, Education, ContactMessage
 from .serializers import (
     ProjectSerializer, SkillSerializer, TestimonialSerializer,
     ExperienceSerializer, EducationSerializer, ContactMessageSerializer
 )
+
+# Cross-app imports from blog app
+from blog.models import BlogPost, Category, Tag, Comment
+from blog.serializers import BlogPostListSerializer
+
+# OpenAPI documentation tools
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
 
 
 @shared_task
@@ -357,9 +367,6 @@ class EducationListView(generics.ListAPIView):
 class ContactCreateView(generics.CreateAPIView):
     """
     Create a new contact message.
-    Sends two emails:
-    1. Notification to admin
-    2. Auto-reply confirmation to the visitor (in their language)
     """
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
@@ -386,6 +393,8 @@ class ContactCreateView(generics.CreateAPIView):
 class DashboardStatsView(generics.GenericAPIView):
     """Get dashboard statistics for admin"""
     permission_classes = [IsAuthenticated]
+    # Explicit serializer fallback declaration to appease spectacular loops
+    serializer_class = SkillSerializer
     
     def get(self, request):
         stats = {
@@ -400,13 +409,14 @@ class DashboardStatsView(generics.GenericAPIView):
         return Response(stats)
 
 
+@extend_schema(
+    responses={200: BlogPostListSerializer(many=True)},
+    description="Fetches recent posts layout array data structures targeting public index pages."
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def recent_blog_posts(request):
     """Get recent blog posts for the homepage"""
-    from blog.models import BlogPost
-    from blog.serializers import BlogPostListSerializer
-    
     cache_key = 'recent_blog_posts'
     posts = cache.get(cache_key)
     
@@ -417,6 +427,11 @@ def recent_blog_posts(request):
     serializer = BlogPostListSerializer(posts, many=True)
     return Response(serializer.data)
 
+
+@extend_schema(
+    responses={200: OpenApiTypes.OBJECT},
+    description="Simple health checking verification pipeline target."
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def health_check(request):

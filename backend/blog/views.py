@@ -18,6 +18,9 @@ from .serializers import (
     BlogArchiveSerializer, BlogSearchSerializer
 )
 
+# Import schema tools
+from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.types import OpenApiTypes
 
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 9
@@ -122,6 +125,8 @@ class BlogPostUpdateView(generics.UpdateAPIView):
 
 class BlogPostDeleteView(generics.DestroyAPIView):
     queryset = BlogPost.objects.all()
+    # Explicitly declared to satisfy schema validation loops even on deletions
+    serializer_class = BlogPostDetailSerializer
     permission_classes = [IsAdminUser]
     lookup_field = 'slug'
 
@@ -201,6 +206,10 @@ class CommentApproveView(generics.UpdateAPIView):
         serializer.save(approved=True)
 
 
+@extend_schema(
+    responses={200: BlogArchiveSerializer(many=True)},
+    description="Returns aggregated timeline milestones mapped alongside matching entry counters."
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def blog_archive(request):
@@ -232,6 +241,14 @@ def blog_archive(request):
     return Response(serializer.data)
 
 
+@extend_schema(
+    parameters=[
+        OpenApiParameter('query', OpenApiTypes.STR, OpenApiParameter.QUERY, required=True, description="Search terms text string value"),
+        OpenApiParameter('page', OpenApiTypes.INT, OpenApiParameter.QUERY, description="Target index window pagination identifier"),
+    ],
+    responses={200: OpenApiTypes.OBJECT},
+    description="Performs context searching scores over published entries utilizing custom weighting algorithms."
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def blog_search(request):
@@ -289,6 +306,10 @@ def blog_search(request):
     })
 
 
+@extend_schema(
+    responses={200: BlogPostListSerializer(many=True)},
+    description="Returns top-performing published articles evaluating engagement metrics profiles within 30 days window frames."
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def featured_posts(request):
@@ -307,6 +328,10 @@ def featured_posts(request):
     return Response(serializer.data)
 
 
+@extend_schema(
+    responses={200: BlogPostListSerializer(many=True)},
+    description="Returns global top historical views collections among all active items."
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def popular_posts(request):
@@ -321,6 +346,11 @@ def popular_posts(request):
     return Response(serializer.data)
 
 
+@extend_schema(
+    request=None,
+    responses={200: OpenApiTypes.OBJECT},
+    description="Purges server redis runtime layout patterns memory indexes."
+)
 @api_view(['POST'])
 @permission_classes([IsAdminUser])
 def clear_blog_cache(request):

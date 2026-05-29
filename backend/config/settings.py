@@ -33,18 +33,25 @@ if RENDER_EXTERNAL_HOSTNAME:
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # --------------------------------------------
 
-CSRF_TRUSTED_ORIGINS = os.environ.get('CSRF_TRUSTED_ORIGINS', '').split(',')
+CSRF_TRUSTED_ORIGINS = [
+    'https://profile-k2rv.onrender.com',
+    'http://localhost:3000',  # If you use a local frontend dev server
+    'http://127.0.0.1:8000',
+]
 
 # Application definition
 INSTALLED_APPS = [
-    'jazzmin',
-    'django.contrib.admin',
+    # Core system requirements must load completely first
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
+    
+    # Theme configuration (must be placed directly before django.contrib.admin)
+    'jazzmin',
+    'django.contrib.admin',
     
     # Third party apps
     'rest_framework',
@@ -63,7 +70,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+         'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -228,10 +235,16 @@ JAZZMIN_SETTINGS = {
 
 # Spectacular (OpenAPI) Settings
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Portfolio API',
-    'DESCRIPTION': 'Professional Portfolio API',
+    'TITLE': 'Your Portfolio API',
+    'DESCRIPTION': 'API documentation for profile, blog, and project features.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    # This setting cleanly differentiates conflicting class names across different apps
+    'POSTPROCESSING_HOOKS': [
+        'drf_spectacular.hooks.postprocess_schema_enums',
+    ],
+    # Tell spectacular how to split identical component names automatically:
+    'COMPONENT_SPLIT_REQUEST': True,
 }
 
 # Celery Configuration

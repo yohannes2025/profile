@@ -1,3 +1,4 @@
+# users/views.py
 from django.shortcuts import render
 
 # Create your views here.
@@ -16,6 +17,10 @@ from django.core.cache import cache
 from datetime import timedelta
 import uuid
 import cloudinary.uploader
+
+# Import drf-spectacular utilities to register metadata cleanly
+from drf_spectacular.utils import extend_schema, extend_schema_field
+from drf_spectacular.types import OpenApiTypes
 
 from .models import User, UserProfile, UserSession, UserActivityLog, EmailVerification, PasswordReset
 from .serializers import (
@@ -48,7 +53,7 @@ class RegisterView(generics.CreateAPIView):
             expires_at=timezone.now() + timedelta(days=1)
         )
         
-        # Send verification email (in production, use Celery)
+        # Send verification email
         verification_link = f"{settings.FRONTEND_URL}/verify-email/{verification.token}"
         send_mail(
             subject="Verify Your Email Address",
@@ -76,7 +81,13 @@ class LoginView(APIView):
     User login endpoint with JWT tokens
     """
     permission_classes = [AllowAny]
+    serializer_class = UserLoginSerializer
     
+    @extend_schema(
+        request=UserLoginSerializer,
+        responses={200: TokenSerializer},
+        description="Authenticates a user via credentials and issues JSON Web Tokens."
+    )
     def post(self, request):
         serializer = UserLoginSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -114,6 +125,11 @@ class LogoutView(APIView):
     """
     permission_classes = [IsAuthenticated]
     
+    @extend_schema(
+        request=None,
+        responses={200: OpenApiTypes.OBJECT},
+        description="Blacklists the provided refresh token and invalidates the session context."
+    )
     def post(self, request):
         try:
             refresh_token = request.data.get('refresh')
@@ -150,6 +166,11 @@ class RefreshTokenView(APIView):
     """
     permission_classes = [AllowAny]
     
+    @extend_schema(
+        request=None,
+        responses={200: OpenApiTypes.OBJECT},
+        description="Generates a replacement short-lived access token using a valid long-lived refresh token token string."
+    )
     def post(self, request):
         refresh_token = request.data.get('refresh')
         if not refresh_token:
@@ -174,9 +195,19 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
     
-    def retrieve(self, request, *args, **kwargs):
+    # Force unique operation IDs to clear path collisions against PublicProfileView
+    @extend_schema(operation_id="retrieve_personal_profile")
+    def get(self, request, *args, **kwargs):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+    @extend_schema(operation_id="update_personal_profile")
+    def put(self, request, *args, **kwargs):
+        return super().put(request, *args, **kwargs)
+
+    @extend_schema(operation_id="partial_update_personal_profile")
+    def patch(self, request, *args, **kwargs):
+        return super().patch(request, *args, **kwargs)
 
 
 class ChangePasswordView(APIView):
@@ -184,7 +215,13 @@ class ChangePasswordView(APIView):
     Change user password
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
     
+    @extend_schema(
+        request=ChangePasswordSerializer,
+        responses={200: OpenApiTypes.OBJECT},
+        description="Updates an authenticated user password matching their old identity check requirements."
+    )
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -208,7 +245,13 @@ class ForgotPasswordView(APIView):
     Request password reset
     """
     permission_classes = [AllowAny]
+    serializer_class = ForgotPasswordSerializer
     
+    @extend_schema(
+        request=ForgotPasswordSerializer,
+        responses={200: OpenApiTypes.OBJECT},
+        description="Dispatches a recovery token link to an identified matching account email context."
+    )
     def post(self, request):
         serializer = ForgotPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -240,7 +283,13 @@ class ResetPasswordView(APIView):
     Reset password with token
     """
     permission_classes = [AllowAny]
+    serializer_class = ResetPasswordSerializer
     
+    @extend_schema(
+        request=ResetPasswordSerializer,
+        responses={200: OpenApiTypes.OBJECT},
+        description="Applies replacement credentials evaluating verification hash parameters."
+    )
     def post(self, request):
         serializer = ResetPasswordSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -269,7 +318,13 @@ class VerifyEmailView(APIView):
     Verify email with token
     """
     permission_classes = [AllowAny]
+    serializer_class = EmailVerificationSerializer
     
+    @extend_schema(
+        request=EmailVerificationSerializer,
+        responses={200: OpenApiTypes.OBJECT},
+        description="Marks a registered user profile status parameter as confirmed when providing signature token."
+    )
     def post(self, request):
         serializer = EmailVerificationSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -292,6 +347,11 @@ class ResendVerificationEmailView(APIView):
     """
     permission_classes = [IsAuthenticated]
     
+    @extend_schema(
+        request=None,
+        responses={200: OpenApiTypes.OBJECT},
+        description="Generates an email verification token if user profile state is not verified."
+    )
     def post(self, request):
         user = request.user
         
@@ -323,7 +383,13 @@ class UploadAvatarView(APIView):
     Upload user avatar
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = AvatarUploadSerializer
     
+    @extend_schema(
+        request=AvatarUploadSerializer,
+        responses={200: OpenApiTypes.OBJECT},
+        description="Uploads profile image configurations targeting attached remote Cloudinary bucket pipelines."
+    )
     def post(self, request):
         serializer = AvatarUploadSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -356,6 +422,10 @@ class DeleteAvatarView(APIView):
     """
     permission_classes = [IsAuthenticated]
     
+    @extend_schema(
+        responses={200: OpenApiTypes.OBJECT},
+        description="Removes the user's avatar image URL reference."
+    )
     def delete(self, request):
         if request.user.avatar:
             request.user.avatar = None
@@ -376,7 +446,13 @@ class UploadResumeView(APIView):
     Upload user resume/CV
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = ResumeUploadSerializer
     
+    @extend_schema(
+        request=ResumeUploadSerializer,
+        responses={200: OpenApiTypes.OBJECT},
+        description="Saves a portfolio resume file link payload context into remote asset stores."
+    )
     def post(self, request):
         serializer = ResumeUploadSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -425,6 +501,10 @@ class TerminateSessionView(APIView):
     """
     permission_classes = [IsAuthenticated]
     
+    @extend_schema(
+        responses={200: OpenApiTypes.OBJECT},
+        description="Updates tracking configurations for a specific session identifier, toggling activity parameters false."
+    )
     def delete(self, request, session_id):
         session = get_object_or_404(UserSession, id=session_id, user=request.user)
         session.is_active = False
@@ -450,7 +530,12 @@ class DashboardStatsView(APIView):
     Get dashboard statistics for authenticated user
     """
     permission_classes = [IsAuthenticated]
+    serializer_class = DashboardStatsSerializer
     
+    @extend_schema(
+        responses={200: DashboardStatsSerializer},
+        description="Gathers analytical aggregation parameters across system assets linked with metrics data profiles."
+    )
     def get(self, request):
         cache_key = f"dashboard_stats_{request.user.id}"
         stats = cache.get(cache_key)
@@ -485,7 +570,8 @@ class PublicProfileView(generics.RetrieveAPIView):
     def get_queryset(self):
         return User.objects.filter(is_active=True)
     
-    def retrieve(self, request, *args, **kwargs):
+    @extend_schema(operation_id="retrieve_public_profile")
+    def get(self, request, *args, **kwargs):
         user = self.get_object()
         
         # Increment profile views (once per session)
@@ -499,6 +585,11 @@ class PublicProfileView(generics.RetrieveAPIView):
         return Response(serializer.data)
 
 
+# CRITICAL FIX: @extend_schema placed ABOVE @api_view decorator block
+@extend_schema(
+    responses={200: OpenApiTypes.OBJECT},
+    description="Soft deletes the user account state flag context configuration."
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def delete_account(request):
@@ -519,6 +610,11 @@ def delete_account(request):
     return Response({'message': 'Account deleted successfully'})
 
 
+# CRITICAL FIX: @extend_schema placed ABOVE @api_view decorator block
+@extend_schema(
+    responses={200: OpenApiTypes.OBJECT},
+    description="Compiles comprehensive internal logs and identity mapping parameters to export records for GDPR validation workflows."
+)
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def export_user_data(request):

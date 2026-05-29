@@ -1,0 +1,2760 @@
+openapi: 3.0.3
+info:
+  title: Your Portfolio API
+  version: 1.0.0
+  description: API documentation for profile, blog, and project features.
+paths:
+  /api/blog/:
+    get:
+      operationId: api_blog_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBlogPostListList'
+          description: ''
+  /api/blog/{post_slug}/comments/:
+    get:
+      operationId: api_blog_comments_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - in: path
+        name: post_slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCommentList'
+          description: ''
+  /api/blog/{post_slug}/comments/create/:
+    post:
+      operationId: api_blog_comments_create_create
+      parameters:
+      - in: path
+        name: post_slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentCreateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommentCreateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommentCreateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentCreate'
+          description: ''
+  /api/blog/{slug}/:
+    get:
+      operationId: api_blog_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPostDetail'
+          description: ''
+  /api/blog/{slug}/delete/:
+    delete:
+      operationId: api_blog_delete_destroy
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/blog/{slug}/update/:
+    put:
+      operationId: api_blog_update_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPostCreateUpdate'
+          description: ''
+    patch:
+      operationId: api_blog_update_partial_update
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBlogPostCreateUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBlogPostCreateUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBlogPostCreateUpdateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPostCreateUpdate'
+          description: ''
+  /api/blog/archive/:
+    get:
+      operationId: api_blog_archive_list
+      description: Returns aggregated timeline milestones mapped alongside matching
+        entry counters.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlogArchive'
+          description: ''
+  /api/blog/categories/:
+    get:
+      operationId: api_blog_categories_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCategoryList'
+          description: ''
+  /api/blog/categories/{slug}/:
+    get:
+      operationId: api_blog_categories_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: ''
+  /api/blog/clear-cache/:
+    post:
+      operationId: api_blog_clear_cache_create
+      description: Purges server redis runtime layout patterns memory indexes.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/blog/comments/{id}/approve/:
+    put:
+      operationId: api_blog_comments_approve_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CommentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+    patch:
+      operationId: api_blog_comments_approve_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedCommentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+          description: ''
+  /api/blog/create/:
+    post:
+      operationId: api_blog_create_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogPostCreateUpdate'
+          description: ''
+  /api/blog/featured/:
+    get:
+      operationId: api_blog_featured_list
+      description: Returns top-performing published articles evaluating engagement
+        metrics profiles within 30 days window frames.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlogPostList'
+          description: ''
+  /api/blog/popular/:
+    get:
+      operationId: api_blog_popular_list
+      description: Returns global top historical views collections among all active
+        items.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlogPostList'
+          description: ''
+  /api/blog/search/:
+    get:
+      operationId: api_blog_search_retrieve
+      description: Performs context searching scores over published entries utilizing
+        custom weighting algorithms.
+      parameters:
+      - in: query
+        name: page
+        schema:
+          type: integer
+        description: Target index window pagination identifier
+      - in: query
+        name: query
+        schema:
+          type: string
+        description: Search terms text string value
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/blog/tags/:
+    get:
+      operationId: api_blog_tags_list
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTagList'
+          description: ''
+  /api/blog/tags/{slug}/:
+    get:
+      operationId: api_blog_tags_retrieve
+      parameters:
+      - in: path
+        name: slug
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+          description: ''
+  /api/contact/:
+    post:
+      operationId: api_contact_create
+      description: Create a new contact message.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContactMessageRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ContactMessageRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ContactMessageRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContactMessage'
+          description: ''
+  /api/dashboard/stats/:
+    get:
+      operationId: api_dashboard_stats_retrieve
+      description: Get dashboard statistics for admin
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Skill'
+          description: ''
+  /api/education/:
+    get:
+      operationId: api_education_list
+      description: List all education
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEducationList'
+          description: ''
+  /api/experiences/:
+    get:
+      operationId: api_experiences_list
+      description: List all work experiences
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedExperienceList'
+          description: ''
+  /api/projects/:
+    get:
+      operationId: api_projects_list
+      description: List all featured projects
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectList'
+          description: ''
+  /api/recent-posts/:
+    get:
+      operationId: api_recent_posts_list
+      description: Fetches recent posts layout array data structures targeting public
+        index pages.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlogPostList'
+          description: ''
+  /api/skills/:
+    get:
+      operationId: api_skills_list
+      description: List all skills
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSkillList'
+          description: ''
+  /api/testimonials/:
+    get:
+      operationId: api_testimonials_list
+      description: List all featured testimonials
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTestimonialList'
+          description: ''
+  /api/users/activities/:
+    get:
+      operationId: api_users_activities_list
+      description: List user activities
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserActivityLogList'
+          description: ''
+  /api/users/change-password/:
+    post:
+      operationId: api_users_change_password_create
+      description: Updates an authenticated user password matching their old identity
+        check requirements.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ChangePasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/dashboard/stats/:
+    get:
+      operationId: api_users_dashboard_stats_retrieve
+      description: Gathers analytical aggregation parameters across system assets
+        linked with metrics data profiles.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardStats'
+          description: ''
+  /api/users/delete-account/:
+    get:
+      operationId: api_users_delete_account_retrieve
+      description: Soft deletes the user account state flag context configuration.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/delete-avatar/:
+    delete:
+      operationId: api_users_delete_avatar_destroy
+      description: Removes the user's avatar image URL reference.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/export-data/:
+    get:
+      operationId: api_users_export_data_retrieve
+      description: Compiles comprehensive internal logs and identity mapping parameters
+        to export records for GDPR validation workflows.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/forgot-password/:
+    post:
+      operationId: api_users_forgot_password_create
+      description: Dispatches a recovery token link to an identified matching account
+        email context.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/login/:
+    post:
+      operationId: api_users_login_create
+      description: Authenticates a user via credentials and issues JSON Web Tokens.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserLoginRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+          description: ''
+  /api/users/logout/:
+    post:
+      operationId: api_users_logout_create
+      description: Blacklists the provided refresh token and invalidates the session
+        context.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/profile/:
+    get:
+      operationId: retrieve_personal_profile
+      description: Get and update user profile
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+    put:
+      operationId: update_personal_profile
+      description: Get and update user profile
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+    patch:
+      operationId: partial_update_personal_profile
+      description: Get and update user profile
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdate'
+          description: ''
+  /api/users/profile/{username}/:
+    get:
+      operationId: retrieve_public_profile
+      description: View public user profile by username
+      parameters:
+      - in: path
+        name: username
+        schema:
+          type: string
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppUser'
+          description: ''
+  /api/users/register/:
+    post:
+      operationId: api_users_register_create
+      description: User registration endpoint
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/UserRegistrationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserRegistration'
+          description: ''
+  /api/users/resend-verification/:
+    post:
+      operationId: api_users_resend_verification_create
+      description: Generates an email verification token if user profile state is
+        not verified.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/reset-password/:
+    post:
+      operationId: api_users_reset_password_create
+      description: Applies replacement credentials evaluating verification hash parameters.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/sessions/:
+    get:
+      operationId: api_users_sessions_list
+      description: List user active sessions
+      parameters:
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedUserSessionList'
+          description: ''
+  /api/users/sessions/{session_id}/terminate/:
+    delete:
+      operationId: api_users_sessions_terminate_destroy
+      description: Updates tracking configurations for a specific session identifier,
+        toggling activity parameters false.
+      parameters:
+      - in: path
+        name: session_id
+        schema:
+          type: integer
+        required: true
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/token/refresh/:
+    post:
+      operationId: api_users_token_refresh_create
+      description: Generates a replacement short-lived access token using a valid
+        long-lived refresh token token string.
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/upload-avatar/:
+    post:
+      operationId: api_users_upload_avatar_create
+      description: Uploads profile image configurations targeting attached remote
+        Cloudinary bucket pipelines.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvatarUploadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AvatarUploadRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AvatarUploadRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/upload-resume/:
+    post:
+      operationId: api_users_upload_resume_create
+      description: Saves a portfolio resume file link payload context into remote
+        asset stores.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResumeUploadRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ResumeUploadRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ResumeUploadRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/users/verify-email/:
+    post:
+      operationId: api_users_verify_email_create
+      description: Marks a registered user profile status parameter as confirmed when
+        providing signature token.
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmailVerificationRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /healthz:
+    get:
+      operationId: healthz_retrieve
+      description: Simple health checking verification pipeline target.
+      tags:
+      - healthz
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+components:
+  schemas:
+    ActivityTypeEnum:
+      enum:
+      - login
+      - logout
+      - profile_update
+      - password_change
+      - email_change
+      - avatar_upload
+      - resume_upload
+      - project_view
+      - blog_view
+      - comment
+      - contact
+      - download
+      type: string
+      description: |-
+        * `login` - Login
+        * `logout` - Logout
+        * `profile_update` - Profile Update
+        * `password_change` - Password Change
+        * `email_change` - Email Change
+        * `avatar_upload` - Avatar Upload
+        * `resume_upload` - Resume Upload
+        * `project_view` - Project View
+        * `blog_view` - Blog View
+        * `comment` - Comment
+        * `contact` - Contact Form
+        * `download` - Download
+    AppUser:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        full_name:
+          type: string
+          readOnly: true
+        initials:
+          type: string
+          readOnly: true
+        avatar:
+          type: string
+          nullable: true
+        bio:
+          type: string
+          nullable: true
+          maxLength: 500
+        profession:
+          type: string
+          nullable: true
+          maxLength: 200
+        company:
+          type: string
+          nullable: true
+          maxLength: 200
+        location:
+          type: string
+          nullable: true
+          maxLength: 200
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        github:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        linkedin:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        twitter:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        instagram:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        facebook:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        years_of_experience:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        phone_number:
+          type: string
+          nullable: true
+          pattern: ^\+?1?\d{9,15}$
+          maxLength: 20
+        is_email_verified:
+          type: boolean
+          readOnly: true
+        email_notifications:
+          type: boolean
+        dark_mode_default:
+          type: boolean
+        language:
+          type: string
+          maxLength: 10
+        profile_views:
+          type: integer
+          readOnly: true
+        profile_completion:
+          type: integer
+          readOnly: true
+        date_joined:
+          type: string
+          format: date-time
+          readOnly: true
+        last_login:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - date_joined
+      - full_name
+      - id
+      - initials
+      - is_email_verified
+      - last_login
+      - profile_completion
+      - profile_views
+      - username
+    AvatarUploadRequest:
+      type: object
+      properties:
+        avatar:
+          type: string
+          format: binary
+      required:
+      - avatar
+    BlogArchive:
+      type: object
+      properties:
+        year:
+          type: integer
+        month:
+          type: integer
+        month_name:
+          type: string
+        count:
+          type: integer
+      required:
+      - count
+      - month
+      - month_name
+      - year
+    BlogAuthor:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+      required:
+      - id
+      - username
+    BlogPostCreateUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        excerpt:
+          type: string
+        content:
+          type: string
+        featured_image:
+          type: string
+          nullable: true
+          title: Image
+        category:
+          type: integer
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        published:
+          type: boolean
+      required:
+      - content
+      - excerpt
+      - slug
+      - title
+    BlogPostCreateUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        excerpt:
+          type: string
+          minLength: 1
+        content:
+          type: string
+          minLength: 1
+        featured_image:
+          type: string
+          minLength: 1
+          nullable: true
+          title: Image
+        category:
+          type: integer
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        published:
+          type: boolean
+      required:
+      - content
+      - excerpt
+      - slug
+      - title
+    BlogPostDetail:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        excerpt:
+          type: string
+        content:
+          type: string
+        featured_image:
+          type: string
+          nullable: true
+          title: Image
+        category:
+          allOf:
+          - $ref: '#/components/schemas/Category'
+          readOnly: true
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+          readOnly: true
+        author:
+          allOf:
+          - $ref: '#/components/schemas/BlogAuthor'
+          readOnly: true
+        views:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        published:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+          readOnly: true
+        related_posts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogPostList'
+          readOnly: true
+        formatted_date:
+          type: string
+          readOnly: true
+        formatted_updated_date:
+          type: string
+          readOnly: true
+        reading_time:
+          type: string
+          readOnly: true
+      required:
+      - author
+      - category
+      - comments
+      - content
+      - created_at
+      - excerpt
+      - formatted_date
+      - formatted_updated_date
+      - id
+      - reading_time
+      - related_posts
+      - slug
+      - tags
+      - title
+      - updated_at
+    BlogPostList:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        excerpt:
+          type: string
+        featured_image:
+          type: string
+          nullable: true
+          title: Image
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        views:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        published:
+          type: boolean
+        category_name:
+          type: string
+          readOnly: true
+        category_slug:
+          type: string
+          readOnly: true
+        author_name:
+          type: string
+          readOnly: true
+        author_username:
+          type: string
+          readOnly: true
+        tag_names:
+          type: array
+          items:
+            type: string
+          readOnly: true
+        formatted_date:
+          type: string
+          readOnly: true
+        reading_time:
+          type: string
+          readOnly: true
+      required:
+      - author_name
+      - author_username
+      - category_name
+      - category_slug
+      - created_at
+      - excerpt
+      - formatted_date
+      - id
+      - reading_time
+      - slug
+      - tag_names
+      - title
+      - updated_at
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        post_count:
+          type: integer
+          readOnly: true
+      required:
+      - id
+      - name
+      - post_count
+      - slug
+    CategoryEnum:
+      enum:
+      - frontend
+      - backend
+      - database
+      - devops
+      - tools
+      type: string
+      description: |-
+        * `frontend` - Frontend
+        * `backend` - Backend
+        * `database` - Database
+        * `devops` - DevOps
+        * `tools` - Tools
+    ChangePasswordRequest:
+      type: object
+      properties:
+        old_password:
+          type: string
+          minLength: 1
+        new_password:
+          type: string
+          minLength: 1
+        confirm_password:
+          type: string
+          minLength: 1
+      required:
+      - confirm_password
+      - new_password
+      - old_password
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        comment:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        approved:
+          type: boolean
+          readOnly: true
+        formatted_date:
+          type: string
+          readOnly: true
+      required:
+      - approved
+      - comment
+      - created_at
+      - email
+      - formatted_date
+      - id
+      - name
+    CommentCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        comment:
+          type: string
+      required:
+      - comment
+      - email
+      - name
+    CommentCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        comment:
+          type: string
+          minLength: 1
+      required:
+      - comment
+      - email
+      - name
+    CommentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        comment:
+          type: string
+          minLength: 1
+      required:
+      - comment
+      - email
+      - name
+    ContactMessage:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        subject:
+          type: string
+          maxLength: 200
+        message:
+          type: string
+      required:
+      - email
+      - message
+      - name
+      - subject
+    ContactMessageRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        subject:
+          type: string
+          minLength: 1
+          maxLength: 200
+        message:
+          type: string
+          minLength: 1
+      required:
+      - email
+      - message
+      - name
+      - subject
+    DashboardStats:
+      type: object
+      properties:
+        total_projects:
+          type: integer
+        total_blog_posts:
+          type: integer
+        total_views:
+          type: integer
+        total_comments:
+          type: integer
+        profile_views:
+          type: integer
+        recent_activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserActivityLog'
+      required:
+      - profile_views
+      - recent_activities
+      - total_blog_posts
+      - total_comments
+      - total_projects
+      - total_views
+    Education:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        degree:
+          type: string
+          maxLength: 200
+        institution:
+          type: string
+          maxLength: 200
+        location:
+          type: string
+          maxLength: 200
+        start_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        end_year:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        description:
+          type: string
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+      required:
+      - degree
+      - end_year
+      - id
+      - institution
+      - location
+      - start_year
+    EmailVerificationRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          format: uuid
+      required:
+      - token
+    Experience:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        company:
+          type: string
+          maxLength: 200
+        location:
+          type: string
+          maxLength: 200
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        current:
+          type: boolean
+        description:
+          type: string
+        technologies: {}
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+      required:
+      - company
+      - description
+      - id
+      - start_date
+      - title
+    ForgotPasswordRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    PaginatedBlogPostListList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/BlogPostList'
+    PaginatedCategoryList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Category'
+    PaginatedCommentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Comment'
+    PaginatedEducationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Education'
+    PaginatedExperienceList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Experience'
+    PaginatedProjectList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+    PaginatedSkillList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+    PaginatedTagList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+    PaginatedTestimonialList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Testimonial'
+    PaginatedUserActivityLogList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserActivityLog'
+    PaginatedUserSessionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSession'
+    PatchedBlogPostCreateUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        slug:
+          type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        excerpt:
+          type: string
+          minLength: 1
+        content:
+          type: string
+          minLength: 1
+        featured_image:
+          type: string
+          minLength: 1
+          nullable: true
+          title: Image
+        category:
+          type: integer
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+            minLength: 1
+        published:
+          type: boolean
+    PatchedCommentRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        comment:
+          type: string
+          minLength: 1
+    PatchedUserUpdateRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        bio:
+          type: string
+          nullable: true
+          maxLength: 500
+        profession:
+          type: string
+          nullable: true
+          maxLength: 200
+        company:
+          type: string
+          nullable: true
+          maxLength: 200
+        location:
+          type: string
+          nullable: true
+          maxLength: 200
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        github:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        linkedin:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        twitter:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        instagram:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        facebook:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        phone_number:
+          type: string
+          nullable: true
+          pattern: ^\+?1?\d{9,15}$
+          maxLength: 20
+        email_notifications:
+          type: boolean
+        dark_mode_default:
+          type: boolean
+        language:
+          type: string
+          minLength: 1
+          maxLength: 10
+    Project:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        title:
+          type: string
+          maxLength: 200
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        description:
+          type: string
+        content:
+          type: string
+        image:
+          type: string
+        github_link:
+          type: string
+          format: uri
+          maxLength: 200
+        live_demo:
+          type: string
+          format: uri
+          maxLength: 200
+        technologies: {}
+        featured:
+          type: boolean
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - description
+      - github_link
+      - id
+      - image
+      - slug
+      - title
+      - updated_at
+    ResetPasswordRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          format: uuid
+        new_password:
+          type: string
+          minLength: 1
+        confirm_password:
+          type: string
+          minLength: 1
+      required:
+      - confirm_password
+      - new_password
+      - token
+    ResumeUploadRequest:
+      type: object
+      properties:
+        resume:
+          type: string
+          format: binary
+      required:
+      - resume
+    Skill:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 100
+        category:
+          $ref: '#/components/schemas/CategoryEnum'
+        proficiency:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+          description: Percentage 0-100
+        icon:
+          type: string
+          maxLength: 50
+        order:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+      required:
+      - category
+      - id
+      - name
+      - proficiency
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 50
+        slug:
+          type: string
+          maxLength: 50
+          pattern: ^[-a-zA-Z0-9_]+$
+        post_count:
+          type: integer
+          readOnly: true
+      required:
+      - id
+      - name
+      - post_count
+      - slug
+    Testimonial:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        position:
+          type: string
+          maxLength: 200
+        company:
+          type: string
+          maxLength: 200
+        feedback:
+          type: string
+        image:
+          type: string
+        rating:
+          type: integer
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          format: int64
+        featured:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - feedback
+      - id
+      - name
+    Token:
+      type: object
+      properties:
+        access:
+          type: string
+        refresh:
+          type: string
+        user:
+          $ref: '#/components/schemas/AppUser'
+      required:
+      - access
+      - refresh
+      - user
+    UserActivityLog:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        activity_type:
+          $ref: '#/components/schemas/ActivityTypeEnum'
+        description:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        formatted_time:
+          type: string
+          readOnly: true
+      required:
+      - activity_type
+      - created_at
+      - formatted_time
+      - id
+    UserLoginRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - username
+    UserRegistration:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+      required:
+      - username
+    UserRegistrationRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          minLength: 1
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          title: Email address
+          maxLength: 254
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        password2:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - password
+      - password2
+      - username
+    UserSession:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        session_key:
+          type: string
+          readOnly: true
+        ip_address:
+          type: string
+          nullable: true
+        user_agent:
+          type: string
+          nullable: true
+        device_type:
+          type: string
+          nullable: true
+          maxLength: 50
+        browser:
+          type: string
+          nullable: true
+          maxLength: 100
+        os:
+          type: string
+          nullable: true
+          maxLength: 100
+        location:
+          nullable: true
+        login_time:
+          type: string
+          format: date-time
+          readOnly: true
+        last_activity:
+          type: string
+          format: date-time
+          readOnly: true
+        logout_time:
+          type: string
+          format: date-time
+          nullable: true
+        is_active:
+          type: boolean
+        user:
+          type: integer
+      required:
+      - id
+      - last_activity
+      - login_time
+      - session_key
+      - user
+    UserUpdate:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        bio:
+          type: string
+          nullable: true
+          maxLength: 500
+        profession:
+          type: string
+          nullable: true
+          maxLength: 200
+        company:
+          type: string
+          nullable: true
+          maxLength: 200
+        location:
+          type: string
+          nullable: true
+          maxLength: 200
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        github:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        linkedin:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        twitter:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        instagram:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        facebook:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        phone_number:
+          type: string
+          nullable: true
+          pattern: ^\+?1?\d{9,15}$
+          maxLength: 20
+        email_notifications:
+          type: boolean
+        dark_mode_default:
+          type: boolean
+        language:
+          type: string
+          maxLength: 10
+    UserUpdateRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        bio:
+          type: string
+          nullable: true
+          maxLength: 500
+        profession:
+          type: string
+          nullable: true
+          maxLength: 200
+        company:
+          type: string
+          nullable: true
+          maxLength: 200
+        location:
+          type: string
+          nullable: true
+          maxLength: 200
+        website:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        github:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        linkedin:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        twitter:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        instagram:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        facebook:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        youtube:
+          type: string
+          format: uri
+          nullable: true
+          maxLength: 200
+        phone_number:
+          type: string
+          nullable: true
+          pattern: ^\+?1?\d{9,15}$
+          maxLength: 20
+        email_notifications:
+          type: boolean
+        dark_mode_default:
+          type: boolean
+        language:
+          type: string
+          minLength: 1
+          maxLength: 10
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
