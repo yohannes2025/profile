@@ -34,14 +34,17 @@ def api_root(request):
 urlpatterns = [
     path('', api_root, name='api-root'),
     path('admin/', admin.site.urls),
-    
-    # Catching '/healthz' directly without requiring a trailing slash to satisfy Render
     path('healthz', health_check, name='health-check'),  
-    
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/users/', include('users.urls')),
-    path('api/', include('api.urls')),
+    
+    # 1. Point the bare '/api/' path to display your endpoint guide
+    path('api/', api_root, name='api-index'), 
+    
+    # 2. Keep including your sub-routes as usual
+    path('api/', include('api.urls')), 
+    
     path('api/blog/', include('blog.urls')),
     path('api/recent-posts/', recent_blog_posts, name='recent-posts'),
 ]
