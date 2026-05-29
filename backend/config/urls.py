@@ -25,7 +25,7 @@ def api_root(request):
             'education': '/api/education/',
             'blog': '/api/blog/',
             'recent_posts': '/api/recent-posts/',
-            'health': '/healthz/',
+            'health': '/healthz',
         },
         'documentation': 'Visit /api/docs/ for interactive API documentation'
     })
@@ -34,7 +34,10 @@ def api_root(request):
 urlpatterns = [
     path('', api_root, name='api-root'),
     path('admin/', admin.site.urls),
-    path('healthz/', health_check, name='health-check'),  # Add this line
+    
+    # Catching '/healthz' directly without requiring a trailing slash to satisfy Render
+    path('healthz', health_check, name='health-check'),  
+    
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/users/', include('users.urls')),
