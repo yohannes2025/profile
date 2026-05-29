@@ -1,5 +1,7 @@
+# blog/serializers.py
 from rest_framework import serializers
 from django.contrib.auth.models import User
+from drf_spectacular.utils import extend_schema_field  # Import added for type hints
 from .models import BlogPost, Category, Tag, Comment
 
 
@@ -16,6 +18,7 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ['id', 'name', 'slug', 'description', 'post_count']
     
+    @extend_schema_field(serializers.IntegerField())
     def get_post_count(self, obj):
         return obj.blogpost_set.filter(published=True).count()
 
@@ -27,6 +30,7 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = ['id', 'name', 'slug', 'post_count']
     
+    @extend_schema_field(serializers.IntegerField())
     def get_post_count(self, obj):
         return obj.blogpost_set.filter(published=True).count()
 
@@ -39,6 +43,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'email', 'comment', 'created_at', 'approved', 'formatted_date']
         read_only_fields = ['approved', 'created_at']
     
+    @extend_schema_field(serializers.CharField())
     def get_formatted_date(self, obj):
         return obj.created_at.strftime("%B %d, %Y")
     
@@ -67,19 +72,22 @@ class BlogPostListSerializer(serializers.ModelSerializer):
             'reading_time'
         ]
     
+    @extend_schema_field(serializers.ListField(child=serializers.CharField()))
     def get_tag_names(self, obj):
         return [tag.name for tag in obj.tags.all()]
     
+    @extend_schema_field(serializers.CharField())
     def get_formatted_date(self, obj):
         return obj.created_at.strftime("%B %d, %Y")
     
+    @extend_schema_field(serializers.CharField())
     def get_reading_time(self, obj):
         word_count = len(obj.content.split())
         minutes = max(1, round(word_count / 200))
         return f"{minutes} min read"
 
 
-# Add this alias for backward compatibility
+# Alias for backward compatibility
 BlogPostSerializer = BlogPostListSerializer
 
 
@@ -102,10 +110,12 @@ class BlogPostDetailSerializer(serializers.ModelSerializer):
             'formatted_date', 'formatted_updated_date', 'reading_time'
         ]
     
+    @extend_schema_field(CommentSerializer(many=True))
     def get_comments(self, obj):
         comments = obj.comments.filter(approved=True)
         return CommentSerializer(comments, many=True).data
     
+    @extend_schema_field(BlogPostListSerializer(many=True))
     def get_related_posts(self, obj):
         related = BlogPost.objects.filter(
             published=True
@@ -127,12 +137,15 @@ class BlogPostDetailSerializer(serializers.ModelSerializer):
         
         return BlogPostListSerializer(related, many=True).data
     
+    @extend_schema_field(serializers.CharField())
     def get_formatted_date(self, obj):
         return obj.created_at.strftime("%B %d, %Y")
     
+    @extend_schema_field(serializers.CharField())
     def get_formatted_updated_date(self, obj):
         return obj.updated_at.strftime("%B %d, %Y")
     
+    @extend_schema_field(serializers.CharField())
     def get_reading_time(self, obj):
         word_count = len(obj.content.split())
         minutes = max(1, round(word_count / 200))
