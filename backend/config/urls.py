@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from django.http import JsonResponse
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from api.views import recent_blog_posts, health_check  # Add health_check here
+from api.views import run_migrations
 
 
 def api_root(request):
@@ -49,6 +50,8 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('api/blog/', include('blog.urls')),
     path('api/recent-posts/', recent_blog_posts, name='recent-posts'),
+    
+    path('migrate/', run_migrations, name='migrate'),
 ]
 
 if settings.DEBUG:

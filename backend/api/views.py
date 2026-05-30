@@ -437,3 +437,28 @@ def recent_blog_posts(request):
 def health_check(request):
     """Health check endpoint for Render"""
     return Response({'status': 'healthy', 'timestamp': datetime.datetime.now().isoformat()})
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def run_migrations(request):
+    """Temporary endpoint to run migrations"""
+    from django.core.management import call_command
+    import io
+    import sys
+    
+    # Only allow in development or with secret key
+    if settings.DEBUG == False:
+        return Response({'error': 'Not allowed in production'}, status=403)
+    
+    # Capture output
+    out = io.StringIO()
+    sys.stdout = out
+    
+    try:
+        call_command('migrate', stdout=out)
+        output = out.getvalue()
+        return Response({'status': 'success', 'output': output})
+    except Exception as e:
+        return Response({'status': 'error', 'error': str(e)}, status=500)
+    finally:
+        sys.stdout = sys.__stdout__
