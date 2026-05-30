@@ -148,6 +148,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:8000",
+    "https://frontend-nine-sable-61.vercel.app",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
