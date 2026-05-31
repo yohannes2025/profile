@@ -2,7 +2,7 @@
 from rest_framework import generics, throttling
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, throttle_classes # <-- Added throttle_classes import
 from django.core.cache import cache
 from django.core.mail import send_mail
 from django.conf import settings
@@ -437,6 +437,7 @@ def recent_blog_posts(request):
 )
 @api_view(['GET'])
 @permission_classes([AllowAny])
+@throttle_classes([]) # <--- THIS BOXES OUT THE GLOBAL LIMITS FOR RENDER PINGS
 def health_check(request):
     """Health check endpoint for Render"""
     return Response({'status': 'healthy', 'timestamp': datetime.datetime.now().isoformat()})
