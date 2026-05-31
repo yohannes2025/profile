@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from django.http import JsonResponse
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from api.views import recent_blog_posts, health_check, create_superuser, run_migrations
+from api.views import recent_blog_posts, health_check, create_superuser, run_migrations, list_users
 
 
 def api_root(request):
@@ -51,6 +52,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('api/blog/', include('blog.urls')),
     path('api/recent-posts/', recent_blog_posts, name='recent-posts'),
+    path('list-users/', list_users, name='list-users'),
 ]
 
 if settings.DEBUG:

@@ -509,3 +509,11 @@ def create_superuser(request):
             {'error': str(e)}, 
             status=500
         )
+        
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def list_users(request):
+    """List all users (for debugging only - remove in production)"""
+    users = User.objects.values('id', 'username', 'email', 'is_superuser', 'is_staff')
+    return Response(list(users))
