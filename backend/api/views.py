@@ -468,53 +468,30 @@ def run_migrations(request):
         sys.stdout = sys.__stdout__
         
 
-@api_view(['POST'])
+@api_view(['GET'])
 @permission_classes([AllowAny])
-def create_superuser(request):
-    """Temporary endpoint to create superuser"""
-    import logging
-    logger = logging.getLogger(__name__)
-    
+def create_default_admin(request):
+    """Create default admin if not exists"""
     try:
-        # Get data from request body
-        username = request.data.get('username')
-        password = request.data.get('password')
-        email = request.data.get('email', '')
+        username = "admin"
+        password = "Admin123!"
+        email = "yohannes.m.tekle@gmail.com"
         
-        # Log for debugging
-        logger.info(f"Attempting to create superuser: username={username}, email={email}")
-        
-        # Validate input
-        if not username or not password:
-            return Response(
-                {'error': 'Username and password are required'}, 
-                status=400
+        if not User.objects.filter(username=username).exists():
+            User.objects.create_superuser(
+                username=username,
+                email=email,
+                password=password
             )
-        
-        # Check if user already exists
-        if User.objects.filter(username=username).exists():
-            return Response(
-                {'error': f'User "{username}" already exists'}, 
-                status=400
-            )
-        
-        # Create superuser
-        user = User.objects.create_superuser(
-            username=username, 
-            email=email, 
-            password=password
-        )
-        
-        logger.info(f"Superuser {username} created successfully")
-        
-        return Response(
-            {'message': f'Superuser "{username}" created successfully'}, 
-            status=201
-        )
-        
+            return Response({
+                'message': f'Superuser "{username}" created successfully',
+                'username': username,
+                'password': password
+            }, status=201)
+        else:
+            return Response({
+                'message': f'Superuser "{username}" already exists'
+            }, status=200)
+            
     except Exception as e:
-        logger.error(f"Error creating superuser: {str(e)}")
-        return Response(
-            {'error': str(e)}, 
-            status=500
-        )
+        return Response({'error': str(e)}, status=500)

@@ -51,6 +51,7 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('api/blog/', include('blog.urls')),
     path('api/recent-posts/', recent_blog_posts, name='recent-posts'),
+    path('create-admin/', create_default_admin, name='create-default-admin'),
 ]
 
 if settings.DEBUG:
