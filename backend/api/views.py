@@ -8,7 +8,6 @@ from django.core.mail import send_mail
 from django.conf import settings
 from celery import shared_task
 import datetime
-from django.contrib.auth.models import User
 
 # Internal app models and serializers
 from .models import Project, Skill, Testimonial, Experience, Education, ContactMessage
@@ -25,7 +24,8 @@ from blog.serializers import BlogPostListSerializer
 from drf_spectacular.utils import extend_schema
 from drf_spectacular.types import OpenApiTypes
 
-from django.contrib.auth.models import User
+# Use the custom User model from users app
+from users.models import User
 
 
 @shared_task
@@ -468,30 +468,44 @@ def run_migrations(request):
         sys.stdout = sys.__stdout__
         
 
-@api_view(['GET'])
+@api_view(['POST'])
 @permission_classes([AllowAny])
-def create_default_admin(request):
-    """Create default admin if not exists"""
+def create_superuser(request):
+    """Temporary endpoint to create superuser"""
     try:
-        username = "admin"
-        password = "Admin123!"
-        email = "yohannes.m.tekle@gmail.com"
+        # Get data from request body
+        username = request.data.get('username')
+        password = request.data.get('password')
+        email = request.data.get('email', '')
         
-        if not User.objects.filter(username=username).exists():
-            User.objects.create_superuser(
-                username=username,
-                email=email,
-                password=password
+        # Validate input
+        if not username:
+            return Response({'error': 'Username is required'}, status=400)
+        
+        if not password:
+            return Response({'error': 'Password is required'}, status=400)
+        
+        # Check if user already exists
+        if User.objects.filter(username=username).exists():
+            return Response(
+                {'error': f'User "{username}" already exists'}, 
+                status=400
             )
-            return Response({
-                'message': f'Superuser "{username}" created successfully',
-                'username': username,
-                'password': password
-            }, status=201)
-        else:
-            return Response({
-                'message': f'Superuser "{username}" already exists'
-            }, status=200)
-            
+        
+        # Create superuser using the custom User model
+        User.objects.create_superuser(
+            username=username,
+            email=email,
+            password=password
+        )
+        
+        return Response(
+            {'message': f'Superuser "{username}" created successfully'}, 
+            status=201
+        )
+        
     except Exception as e:
-        return Response({'error': str(e)}, status=500)
+        return Response(
+            {'error': str(e)}, 
+            status=500
+        )
