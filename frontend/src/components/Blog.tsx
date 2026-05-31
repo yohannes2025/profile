@@ -29,7 +29,7 @@ export default function Blog() {
           import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
         // Construct the full URL cleanly to target either Render or Local development
-        const response = await fetch(`${baseUrl}/blog/`);
+        const response = await fetch(`${baseUrl}/recent-blog-posts/`);
         const data = await response.json();
         const postsData = data.results || data || [];
         setPosts(Array.isArray(postsData) ? postsData : []);
