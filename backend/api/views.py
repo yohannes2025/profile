@@ -24,6 +24,8 @@ from blog.serializers import BlogPostListSerializer
 from drf_spectacular.utils import extend_schema
 from drf_spectacular.types import OpenApiTypes
 
+from django.contrib.auth.models import User
+
 
 @shared_task
 def send_contact_email_task(name, email, subject, message, language='en'):
@@ -438,6 +440,7 @@ def health_check(request):
     """Health check endpoint for Render"""
     return Response({'status': 'healthy', 'timestamp': datetime.datetime.now().isoformat()})
 
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def run_migrations(request):
@@ -462,3 +465,28 @@ def run_migrations(request):
         return Response({'status': 'error', 'error': str(e)}, status=500)
     finally:
         sys.stdout = sys.__stdout__
+        
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_superuser(request):
+    """Temporary endpoint to create superuser"""
+    # Get data from request body
+    username = request.data.get('username')
+    password = request.data.get('password')
+    email = request.data.get('email', '')
+    
+    # Validate input
+    if not username or not password:
+        return Response({'error': 'Username and password are required'}, status=400)
+    
+    # Check if user already exists
+    if User.objects.filter(username=username).exists():
+        return Response({'error': f'User "{username}" already exists'}, status=400)
+    
+    # Create superuser
+    try:
+        User.objects.create_superuser(username=username, email=email, password=password)
+        return Response({'message': f'Superuser "{username}" created successfully'}, status=201)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
