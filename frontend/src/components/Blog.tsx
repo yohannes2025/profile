@@ -24,7 +24,12 @@ export default function Blog() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/blog/");
+        // Fallback to localhost if the environment variable isn't configured during build time
+        const baseUrl =
+          import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+
+        // Construct the full URL cleanly to target either Render or Local development
+        const response = await fetch(`${baseUrl}/blog/`);
         const data = await response.json();
         const postsData = data.results || data || [];
         setPosts(Array.isArray(postsData) ? postsData : []);
