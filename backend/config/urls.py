@@ -5,8 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from api.views import recent_blog_posts, health_check, create_superuser, run_migrations
-from api.views import recent_blog_posts, health_check, create_superuser, run_migrations, list_users
+from api.views import recent_blog_posts, health_check, create_superuser, run_migrations, list_users, safe_migrate
 
 
 def api_root(request):
@@ -28,7 +27,9 @@ def api_root(request):
             'recent_posts': '/api/recent-posts/',
             'health': '/healthz',
             'migrate': '/migrate/',
+            'safe-migrate': '/safe-migrate/',
             'create_superuser': '/create-superuser/',
+            'list-users': '/list-users/',
         },
         'documentation': 'Visit /api/docs/ for interactive API documentation'
     })
@@ -39,7 +40,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('healthz', health_check, name='health-check'), 
     path('migrate/', run_migrations, name='migrate'),
+    path('safe-migrate/', safe_migrate, name='safe-migrate'),  # ADD THIS LINE
     path('create-superuser/', create_superuser, name='create-superuser'),
+    path('list-users/', list_users, name='list-users'),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/users/', include('users.urls')),
@@ -52,7 +55,6 @@ urlpatterns = [
     path('api/', include('api.urls')),
     path('api/blog/', include('blog.urls')),
     path('api/recent-posts/', recent_blog_posts, name='recent-posts'),
-    path('list-users/', list_users, name='list-users'),
 ]
 
 if settings.DEBUG:

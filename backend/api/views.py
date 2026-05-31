@@ -500,3 +500,19 @@ def list_users(request):
     """List all users (for debugging only - remove in production)"""
     users = User.objects.values('id', 'username', 'email', 'is_superuser', 'is_staff')
     return Response(list(users))
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def safe_migrate(request):
+    """Safe migration endpoint with secret key"""
+    secret = request.headers.get('X-Migrate-Secret')
+    if secret != 'your-secret-key-here':
+        return Response({'error': 'Unauthorized'}, status=401)
+    
+    from django.core.management import call_command
+    import io
+    
+    out = io.StringIO()
+    call_command('migrate', stdout=out)
+    
+    return Response({'status': 'ok', 'output': out.getvalue()})
