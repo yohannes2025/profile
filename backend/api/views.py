@@ -356,30 +356,46 @@ class EducationListView(generics.ListAPIView):
 
 
 class ContactCreateView(generics.CreateAPIView):
-    """
-    Create a new contact message.
-    """
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
     permission_classes = [AllowAny]
     throttle_classes = [ContactThrottle]
     
+    def create(self, request, *args, **kwargs):
+        import logging
+        logger = logging.getLogger(__name__)
+        
+        try:
+            logger.info(f"Contact POST request received: {request.data}")
+            return super().create(request, *args, **kwargs)
+        except Exception as e:
+            import traceback
+            error_msg = f"Contact error: {str(e)}\n{traceback.format_exc()}"
+            logger.error(error_msg)
+            print(error_msg)
+            return Response({'error': str(e), 'details': traceback.format_exc()}, status=500)
+    
     def perform_create(self, serializer):
-        message = serializer.save()
-        
-        # Get language from request headers (sent from frontend)
-        language = self.request.headers.get('Accept-Language', 'en')[:2]
-        if language not in ['en', 'de']:
-            language = 'en'
-        
-        # Call via .delay() to send tasks asynchronously over Redis/Celery
-        send_contact_email_task.delay(
-            message.name, 
-            message.email, 
-            message.subject, 
-            message.message,
-            language
-        )
+        try:
+            message = serializer.save()
+            
+            # Get language from request headers
+            language = self.request.headers.get('Accept-Language', 'en')[:2]
+            if language not in ['en', 'de']:
+                language = 'en'
+            
+            # Send emails via Celery
+            send_contact_email_task(
+                message.name, 
+                message.email, 
+                message.subject, 
+                message.message,
+                language
+            )
+        except Exception as e:
+            import traceback
+            print(f"Error in perform_create: {traceback.format_exc()}")
+            raise e
 
 
 class DashboardStatsView(generics.GenericAPIView):
