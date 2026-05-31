@@ -384,7 +384,7 @@ class ContactCreateView(generics.CreateAPIView):
         if language not in ['en', 'de']:
             language = 'en'
         
-        send_contact_email_task.delay(
+        send_contact_email_task(
             message.name, 
             message.email, 
             message.subject, 
