@@ -28,8 +28,8 @@ export default function Blog() {
         const baseUrl =
           import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
-        // Construct the full URL cleanly to target either Render or Local development
-        const response = await fetch(`${baseUrl}/recent-blog-posts/?v=1`);
+        // Use the correct endpoint: recent-posts (not recent-blog-posts)
+        const response = await fetch(`${baseUrl}/recent-posts/`);
         const data = await response.json();
         const postsData = data.results || data || [];
         setPosts(Array.isArray(postsData) ? postsData : []);
