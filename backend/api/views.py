@@ -439,7 +439,7 @@ def run_migrations(request):
     import io
     import sys
     
-    if settings.DEBUG == False:
+    if settings.DEBUG == True:
         return Response({'error': 'Not allowed in production'}, status=403)
     
     out = io.StringIO()
