@@ -183,8 +183,9 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
     'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle',
+        # Point these to your new custom classes
+        'config.throttling.SafeAnonRateThrottle',  # Replace 'config' with your actual app/folder name if different
+        'config.throttling.SafeUserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
