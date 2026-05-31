@@ -2,7 +2,7 @@
 from rest_framework import generics, throttling
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.decorators import api_view, permission_classes, throttle_classes # <-- Added throttle_classes import
+from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from django.core.cache import cache
 from django.core.mail import send_mail
 from django.conf import settings
@@ -39,6 +39,12 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     
     # Determine language for auto-reply
     is_german = language == 'de'
+    
+    # Check for empty configurations to prevent hard crashes before processing
+    if not settings.DEFAULT_FROM_EMAIL or not settings.CONTACT_EMAIL:
+        error_msg = "SMTP settings are incomplete on Render (DEFAULT_FROM_EMAIL or CONTACT_EMAIL missing)."
+        print(error_msg)
+        return error_msg
     
     # 1. HTML Email to admin (you) - Shows which language was used
     admin_html = f"""
@@ -119,16 +125,6 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     Reply to: {email}
     """
     
-    # Send HTML email to admin
-    send_mail(
-        subject=f"Portfolio Contact: {subject}",
-        message=admin_plain,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[settings.CONTACT_EMAIL],
-        fail_silently=False,
-        html_message=admin_html,
-    )
-    
     # 2. Auto-reply to visitor - IN THEIR LANGUAGE
     if is_german:
         # GERMAN VERSION
@@ -166,13 +162,7 @@ def send_contact_email_task(name, email, subject, message, language='en'):
                     <ul>
                         <li>📱 Mit mir auf <a href="https://linkedin.com/in/yohannes" style="color: #0891b2;">LinkedIn</a> verbinden</li>
                         <li>💻 Meine <a href="https://github.com/yohannes" style="color: #0891b2;">GitHub</a> Projekte ansehen</li>
-                        <li>📂 Meine <a href="http://localhost:5173/#projects" style="color: #0891b2;">Portfolio-Projekte</a> durchstöbern</li>
                     </ul>
-                    
-                    <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
-                        <p style="margin: 0;">💡 Schauen Sie sich in der Zwischenzeit meine neuesten Arbeiten an!</p>
-                        <a href="http://localhost:5173/#projects" class="btn">Zum Portfolio</a>
-                    </div>
                     
                     <hr>
                     
@@ -201,11 +191,6 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     Hier ist eine Kopie Ihrer Nachricht:
     "{message}"
     
-    In der Zwischenzeit können Sie gerne:
-    • Mit mir auf LinkedIn verbinden
-    • Meine GitHub Projekte ansehen
-    • Meine Portfolio-Projekte durchstöbern
-    
     Mit freundlichen Grüßen,
     Yohannes Tekle
     Full-Stack Entwickler
@@ -230,7 +215,6 @@ def send_contact_email_task(name, email, subject, message, language='en'):
                 .content {{ padding: 25px; background: white; }}
                 .message-box {{ background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 4px solid #22c55e; margin: 15px 0; }}
                 .signature {{ margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; }}
-                .btn {{ display: inline-block; background: #0891b2; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; margin: 5px; }}
                 hr {{ margin: 20px 0; border: none; border-top: 1px solid #e5e7eb; }}
             </style>
         </head>
@@ -253,13 +237,7 @@ def send_contact_email_task(name, email, subject, message, language='en'):
                     <ul>
                         <li>📱 Connect with me on <a href="https://linkedin.com/in/yohannes" style="color: #0891b2;">LinkedIn</a></li>
                         <li>💻 Check out my <a href="https://github.com/yohannes" style="color: #0891b2;">GitHub</a> projects</li>
-                        <li>📂 Browse my <a href="http://localhost:5173/#projects" style="color: #0891b2;">portfolio projects</a></li>
                     </ul>
-                    
-                    <div style="background: #f3f4f6; padding: 15px; border-radius: 8px; text-align: center; margin: 20px 0;">
-                        <p style="margin: 0;">💡 While you wait, check out my latest work!</p>
-                        <a href="http://localhost:5173/#projects" class="btn">View Portfolio</a>
-                    </div>
                     
                     <hr>
                     
@@ -288,11 +266,6 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     Here's a copy of your message:
     "{message}"
     
-    In the meantime, feel free to:
-    • Connect with me on LinkedIn
-    • Check out my GitHub projects
-    • Browse my portfolio projects
-    
     Best regards,
     Yohannes Tekle
     Full-Stack Developer
@@ -304,17 +277,32 @@ def send_contact_email_task(name, email, subject, message, language='en'):
         
         email_subject = "Thank you for contacting Yohannes Tekle"
     
-    # Send HTML email to visitor
-    send_mail(
-        subject=email_subject,
-        message=visitor_plain,
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[email],
-        fail_silently=False,
-        html_message=visitor_html,
-    )
-    
-    return f"Emails sent to admin ({settings.CONTACT_EMAIL}) and visitor ({email}) in {'German' if is_german else 'English'}"
+    # Safe SMTP Transmission engine wrap
+    try:
+        # Send HTML email to admin
+        send_mail(
+            subject=f"Portfolio Contact: {subject}",
+            message=admin_plain,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[settings.CONTACT_EMAIL],
+            fail_silently=False,
+            html_message=admin_html,
+        )
+        
+        # Send HTML email to visitor
+        send_mail(
+            subject=email_subject,
+            message=visitor_plain,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False,
+            html_message=visitor_html,
+        )
+        return "Emails successfully sent to admin and visitor."
+    except Exception as e:
+        error_log = f"SMTP Transmission Exception: {str(e)}"
+        print(error_log)
+        return error_log
 
 
 class ContactThrottle(throttling.SimpleRateThrottle):
@@ -384,7 +372,8 @@ class ContactCreateView(generics.CreateAPIView):
         if language not in ['en', 'de']:
             language = 'en'
         
-        send_contact_email_task(
+        # Call via .delay() to send tasks asynchronously over Redis/Celery
+        send_contact_email_task.delay(
             message.name, 
             message.email, 
             message.subject, 
@@ -396,7 +385,6 @@ class ContactCreateView(generics.CreateAPIView):
 class DashboardStatsView(generics.GenericAPIView):
     """Get dashboard statistics for admin"""
     permission_classes = [IsAuthenticated]
-    # Explicit serializer fallback declaration to appease spectacular loops
     serializer_class = SkillSerializer
     
     def get(self, request):
@@ -437,7 +425,7 @@ def recent_blog_posts(request):
 )
 @api_view(['GET'])
 @permission_classes([AllowAny])
-@throttle_classes([]) # <--- THIS BOXES OUT THE GLOBAL LIMITS FOR RENDER PINGS
+@throttle_classes([])  # Bypasses global throttling limits for Render uptime monitor pings
 def health_check(request):
     """Health check endpoint for Render"""
     return Response({'status': 'healthy', 'timestamp': datetime.datetime.now().isoformat()})
@@ -451,11 +439,9 @@ def run_migrations(request):
     import io
     import sys
     
-    # Only allow in development or with secret key
     if settings.DEBUG == False:
         return Response({'error': 'Not allowed in production'}, status=403)
     
-    # Capture output
     out = io.StringIO()
     sys.stdout = out
     
@@ -474,26 +460,22 @@ def run_migrations(request):
 def create_superuser(request):
     """Temporary endpoint to create superuser"""
     try:
-        # Get data from request body
         username = request.data.get('username')
         password = request.data.get('password')
         email = request.data.get('email', '')
         
-        # Validate input
         if not username:
             return Response({'error': 'Username is required'}, status=400)
         
         if not password:
             return Response({'error': 'Password is required'}, status=400)
         
-        # Check if user already exists
         if User.objects.filter(username=username).exists():
             return Response(
                 {'error': f'User "{username}" already exists'}, 
                 status=400
             )
         
-        # Create superuser using the custom User model
         User.objects.create_superuser(
             username=username,
             email=email,
