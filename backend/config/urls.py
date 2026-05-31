@@ -38,20 +38,19 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('healthz', health_check, name='health-check'), 
     path('migrate/', run_migrations, name='migrate'),
-    path('create-superuser/', create_superuser, name='create-superuser'), 
+    path('create-superuser/', create_superuser, name='create-superuser'),
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/users/', include('users.urls')),
     
     # --- Strict Catchers for the Base API Route ---
-    path('api', api_root, name='api-root-noslash'),  # Catches exactly /api
-    path('api/', api_root, name='api-root-slash'),   # Catches exactly /api/
+    path('api', api_root, name='api-root-noslash'),
+    path('api/', api_root, name='api-root-slash'),
     # ----------------------------------------------
 
     path('api/', include('api.urls')),
     path('api/blog/', include('blog.urls')),
     path('api/recent-posts/', recent_blog_posts, name='recent-posts'),
-    path('create-admin/', create_default_admin, name='create-default-admin'),
 ]
 
 if settings.DEBUG:
