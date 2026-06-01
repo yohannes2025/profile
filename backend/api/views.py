@@ -363,35 +363,54 @@ class ContactCreateView(generics.CreateAPIView):
     
     def create(self, request, *args, **kwargs):
         import logging
+        import traceback
         logger = logging.getLogger(__name__)
         
         try:
             logger.info(f"Contact POST request received: {request.data}")
+            print(f"Contact data: {request.data}")
+            
+            # Validate required fields
+            required_fields = ['name', 'email', 'subject', 'message']
+            for field in required_fields:
+                if not request.data.get(field):
+                    return Response(
+                        {'error': f'Missing required field: {field}'}, 
+                        status=400
+                    )
+            
             return super().create(request, *args, **kwargs)
+            
         except Exception as e:
-            import traceback
             error_msg = f"Contact error: {str(e)}\n{traceback.format_exc()}"
             logger.error(error_msg)
             print(error_msg)
-            return Response({'error': str(e), 'details': traceback.format_exc()}, status=500)
+            return Response(
+                {'error': str(e), 'traceback': traceback.format_exc()}, 
+                status=500
+            )
     
     def perform_create(self, serializer):
         try:
+            print("Saving contact message...")
             message = serializer.save()
+            print(f"Message saved with id: {message.id}")
             
-            # Get language from request headers
             language = self.request.headers.get('Accept-Language', 'en')[:2]
             if language not in ['en', 'de']:
                 language = 'en'
+            print(f"Language: {language}")
             
-            # Send emails via Celery
-            send_contact_email_task(
+            # Call email task directly (no Celery for debugging)
+            result = send_contact_email_task(
                 message.name, 
                 message.email, 
                 message.subject, 
                 message.message,
                 language
             )
+            print(f"Email task result: {result}")
+            
         except Exception as e:
             import traceback
             print(f"Error in perform_create: {traceback.format_exc()}")
