@@ -532,3 +532,9 @@ def safe_migrate(request):
     call_command('migrate', stdout=out)
     
     return Response({'status': 'ok', 'output': out.getvalue()})
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def test_post(request):
+    """Simple test endpoint to verify POST works"""
+    return Response({'message': 'POST works!', 'data': request.data}, status=200)
