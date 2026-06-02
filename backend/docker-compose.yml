@@ -9,53 +9,89 @@ services:
       POSTGRES_DB: portfolio_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   redis:
     image: redis:7-alpine
-    ports:
-      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
 
   backend:
     build: .
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py compilemessages &&
-             gunicorn config.wsgi:application --bind 0.0.0.0:8000"
+    entrypoint: ["/entrypoint.sh"]
     volumes:
       - .:/app
-    ports:
-      - "8000:8000"
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
     environment:
-      - DEBUG=0
+      - DEBUG=1
+      - DJANGO_SETTINGS_MODULE=config.settings
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/portfolio_db
       - REDIS_URL=redis://redis:6379
+      - PYTHONPATH=/app
+    working_dir: /app
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
   celery:
-    build: .
-    command: celery -A config worker --loglevel=info
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
     volumes:
       - .:/app
     environment:
       - REDIS_URL=redis://redis:6379
+      - DJANGO_SETTINGS_MODULE=config.settings
+      - PYTHONPATH=/app
+      - CELERY_BROKER_URL=redis://redis:6379
+    working_dir: /app
     depends_on:
-      - redis
-      - backend
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  frontend-builder:
+    image: node:20-alpine
+    working_dir: /app
+    environment:
+      - VITE_API_URL=http://localhost:8080/api
+    volumes:
+      - ../frontend:/app
+      - frontend_build:/output
+    command: sh -c "npm install && npm run build && cp -r dist/* /output/"
+    restart: "no"
 
   nginx:
     image: nginx:alpine
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
       - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - frontend_build:/usr/share/nginx/html
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - backend
+      - frontend-builder
+    restart: unless-stopped
 
 volumes:
   postgres_data:
   static_volume:
+  media_volume:
+  frontend_build:

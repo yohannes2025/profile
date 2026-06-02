@@ -8,6 +8,8 @@ from django.core.mail import send_mail
 from django.conf import settings
 from celery import shared_task
 import datetime
+import os
+import threading  # Added for decoupled, non-blocking production execution
 
 # Internal app models and serializers
 from .models import Project, Skill, Testimonial, Experience, Education, ContactMessage
@@ -42,7 +44,7 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     
     # Check for empty configurations to prevent hard crashes before processing
     if not settings.DEFAULT_FROM_EMAIL or not settings.CONTACT_EMAIL:
-        error_msg = "SMTP settings are incomplete on Render (DEFAULT_FROM_EMAIL or CONTACT_EMAIL missing)."
+        error_msg = "SMTP settings are incomplete (DEFAULT_FROM_EMAIL or CONTACT_EMAIL missing)."
         print(error_msg)
         return error_msg
     
@@ -127,7 +129,6 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     
     # 2. Auto-reply to visitor - IN THEIR LANGUAGE
     if is_german:
-        # GERMAN VERSION
         visitor_html = f"""
         <!DOCTYPE html>
         <html>
@@ -139,7 +140,6 @@ def send_contact_email_task(name, email, subject, message, language='en'):
                 .content {{ padding: 25px; background: white; }}
                 .message-box {{ background: #f0fdf4; padding: 15px; border-radius: 8px; border-left: 4px solid #22c55e; margin: 15px 0; }}
                 .signature {{ margin-top: 20px; padding-top: 20px; border-top: 1px solid #e5e7eb; text-align: center; }}
-                .btn {{ display: inline-block; background: #0891b2; color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; margin: 5px; }}
                 hr {{ margin: 20px 0; border: none; border-top: 1px solid #e5e7eb; }}
             </style>
         </head>
@@ -199,11 +199,9 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     Dies ist eine automatische Bestätigung. Bitte antworten Sie nicht direkt auf diese E-Mail.
     © {current_year} Yohannes Tekle. Alle Rechte vorbehalten.
     """
-        
         email_subject = "Vielen Dank für Ihre Nachricht"
     
     else:
-        # ENGLISH VERSION
         visitor_html = f"""
         <!DOCTYPE html>
         <html>
@@ -274,11 +272,11 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     This is an automated confirmation. Please do not reply directly to this email.
     © {current_year} Yohannes Tekle. All rights reserved.
     """
-        
         email_subject = "Thank you for contacting Yohannes Tekle"
     
     # Safe SMTP Transmission engine wrap
     try:
+        print(f"Initiating SMTP handshake with {settings.EMAIL_HOST}...")
         # Send HTML email to admin
         send_mail(
             subject=f"Portfolio Contact: {subject}",
@@ -298,7 +296,9 @@ def send_contact_email_task(name, email, subject, message, language='en'):
             fail_silently=False,
             html_message=visitor_html,
         )
-        return "Emails successfully sent to admin and visitor."
+        success_msg = "Emails successfully sent to admin and visitor."
+        print(success_msg)
+        return success_msg
     except Exception as e:
         error_log = f"SMTP Transmission Exception: {str(e)}"
         print(error_log)
@@ -401,15 +401,30 @@ class ContactCreateView(generics.CreateAPIView):
                 language = 'en'
             print(f"Language: {language}")
             
-            # Call email task directly (no Celery for debugging)
-            result = send_contact_email_task(
-                message.name, 
-                message.email, 
-                message.subject, 
-                message.message,
-                language
-            )
-            print(f"Email task result: {result}")
+            # Check environment to determine whether to hand off to Celery or Threading
+            # This allows local testing via Docker Compose Celery worker and handles Render gracefully.
+            is_production = os.environ.get('RENDER') == 'true' or not settings.DEBUG
+            
+            if is_production:
+                print("Production detected: Dispatched email via native background threading...")
+                # Run the task function inside an isolated native Python background thread.
+                # Keeps the Render API non-blocking without needing a separate worker service.
+                email_thread = threading.Thread(
+                    target=send_contact_email_task,
+                    args=(message.name, message.email, message.subject, message.message, language)
+                )
+                email_thread.daemon = True
+                email_thread.start()
+            else:
+                print("Local environment: Handing task execution off to Celery queue...")
+                # Run standard celery task distribution when debugging locally via Docker setup
+                send_contact_email_task.delay(
+                    message.name, 
+                    message.email, 
+                    message.subject, 
+                    message.message,
+                    language
+                )
             
         except Exception as e:
             import traceback
@@ -460,7 +475,7 @@ def recent_blog_posts(request):
 )
 @api_view(['GET'])
 @permission_classes([AllowAny])
-@throttle_classes([])  # Bypasses global throttling limits for Render uptime monitor pings
+@throttle_classes([])  
 def health_check(request):
     """Health check endpoint for Render"""
     return Response({'status': 'healthy', 'timestamp': datetime.datetime.now().isoformat()})
