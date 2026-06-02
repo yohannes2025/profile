@@ -211,10 +211,10 @@ SIMPLE_JWT = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 
-# Explicitly lock down the connection variables to avoid env-panel clutter
-EMAIL_PORT = 465
-EMAIL_USE_TLS = False  # Must be False: Port 465 does not support upgrade handshake
-EMAIL_USE_SSL = True   # Must be True: Port 465 wraps the connection immediately
+# Switch to the standard cloud-routing mail port
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True   # Must be True: Port 587 upgrades the plain connection
+EMAIL_USE_SSL = False  # Must be False: Port 587 does not support direct initial SSL
 
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='') # Your 16-character App Password
