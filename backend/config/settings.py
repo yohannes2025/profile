@@ -213,13 +213,14 @@ EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 
 # Switch to the standard cloud-routing mail port
 EMAIL_PORT = 587
-EMAIL_USE_TLS = True   # Must be True: Port 587 upgrades the plain connection
-EMAIL_USE_SSL = False  # Must be False: Port 587 does not support direct initial SSL
+EMAIL_USE_TLS = True   
+EMAIL_USE_SSL = False  
 
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='') # Your 16-character App Password
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default=EMAIL_HOST_USER)
-CONTACT_EMAIL = config('CONTACT_EMAIL', default=EMAIL_HOST_USER)
+# CRITICAL: Ensure defaults exist so GitHub Actions doesn't crash during tests
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='dummy@gmail.com')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='dummypassword') 
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='dummy@gmail.com')
+CONTACT_EMAIL = config('CONTACT_EMAIL', default='dummy@gmail.com')
 
 # TIMEOUT SAFEGUARD
 EMAIL_TIMEOUT = 10
