@@ -30,7 +30,7 @@ from drf_spectacular.types import OpenApiTypes
 from users.models import User
 
 
-#@shared_task
+@shared_task
 def send_contact_email_task(name, email, subject, message, language='en'):
     """
     Send two emails with HTML formatting via Brevo REST HTTP API to bypass cloud SMTP blocks:
@@ -382,7 +382,7 @@ class ContactCreateView(generics.CreateAPIView):
                 email_thread.start()
             else:
                 print("Local environment: Handing task execution off to Celery queue...")
-                # Run standard celery task distribution when debugging locally via Docker setup
+                # Works safely now that @shared_task decorator is active
                 send_contact_email_task.delay(
                     message.name, 
                     message.email, 
@@ -449,12 +449,13 @@ def health_check(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def run_migrations(request):
-    """Temporary endpoint to run migrations"""
+    """Temporary endpoint to run migrations (disabled in production settings)"""
     from django.core.management import call_command
     import io
     import sys
     
-    if settings.DEBUG == True:
+    # Corrected condition: block migrations via HTTP endpoint if not in debug mode
+    if not settings.DEBUG:
         return Response({'error': 'Not allowed in production'}, status=403)
     
     out = io.StringIO()
