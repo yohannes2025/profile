@@ -54,7 +54,7 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     }
     
     # 🌟 FIXED: Changed 'johannes' to 'yohannes' to match your verified SendGrid identity
-    sender_identity = "yohannes.m.tekle@gmail.com"
+    sender_identity = settings.DEFAULT_FROM_EMAIL
     
     # 1. HTML Email to admin (you)
     admin_html = f"""
@@ -151,8 +151,8 @@ def send_contact_email_task(name, email, subject, message, language='en'):
                     
                     <p>In der Zwischenzeit können Sie gerne:</p>
                     <ul>
-                        <li>📱 Mit mir auf <a href="https://linkedin.com/in/yohannes" style="color: #0891b2;">LinkedIn</a> verbinden</li>
-                        <li>💻 Meine <a href="https://github.com/yohannes" style="color: #0891b2;">GitHub</a> Projekte ansehen</li>
+                        <li>📱 Mit mir auf <a href="https://www.linkedin.com/in/yohannes-mebrahtu-tekle-98a01322a/" style="color: #0891b2;">LinkedIn</a> verbinden</li>
+                        <li>💻 Meine <a href="github.com/yohannes2025" style="color: #0891b2;">GitHub</a> Projekte ansehen</li>
                     </ul>
                     
                     <hr>
@@ -203,8 +203,8 @@ def send_contact_email_task(name, email, subject, message, language='en'):
                     
                     <p>In the meantime, feel free to:</p>
                     <ul>
-                        <li>📱 Connect with me on <a href="https://linkedin.com/in/yohannes" style="color: #0891b2;">LinkedIn</a></li>
-                        <li>💻 Check out my <a href="https://github.com/yohannes" style="color: #0891b2;">GitHub</a> projects</li>
+                        <li>📱 Connect with me on <a href="https://www.linkedin.com/in/yohannes-mebrahtu-tekle-98a01322a/" style="color: #0891b2;">LinkedIn</a></li>
+                        <li>💻 Check out my <a href="github.com/yohannes2025" style="color: #0891b2;">GitHub</a> projects</li>
                     </ul>
                     
                     <hr>
