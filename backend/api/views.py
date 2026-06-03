@@ -4,12 +4,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from django.core.cache import cache
-from django.core.mail import send_mail
 from django.conf import settings
 from celery import shared_task
 import datetime
 import os
 import threading  # Added for decoupled, non-blocking production execution
+import requests   # Added for handling secure Brevo HTTP API calls
 
 # Internal app models and serializers
 from .models import Project, Skill, Testimonial, Experience, Education, ContactMessage
@@ -30,10 +30,10 @@ from drf_spectacular.types import OpenApiTypes
 from users.models import User
 
 
-@shared_task
+#@shared_task
 def send_contact_email_task(name, email, subject, message, language='en'):
     """
-    Send two emails with HTML formatting:
+    Send two emails with HTML formatting via Brevo REST HTTP API to bypass cloud SMTP blocks:
     1. Notification to admin (you)
     2. Auto-reply confirmation to the visitor (in their language)
     """
@@ -42,11 +42,16 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     # Determine language for auto-reply
     is_german = language == 'de'
     
-    # Check for empty configurations to prevent hard crashes before processing
-    if not settings.DEFAULT_FROM_EMAIL or not settings.CONTACT_EMAIL:
-        error_msg = "SMTP settings are incomplete (DEFAULT_FROM_EMAIL or CONTACT_EMAIL missing)."
+    # Securely retrieve Brevo API Key from Environment Variables
+    brevo_api_key = os.environ.get('BREVO_API_KEY')
+    if not brevo_api_key:
+        error_msg = "Brevo API Key (BREVO_API_KEY) is missing from the environment variables."
         print(error_msg)
         return error_msg
+        
+    # Standard fallback parameters for emails
+    admin_recipient = "johannes.m.tekle@gmail.com"
+    sender_identity = "johannes.m.tekle@gmail.com"
     
     # 1. HTML Email to admin (you) - Shows which language was used
     admin_html = f"""
@@ -110,23 +115,6 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     </html>
     """
     
-    admin_plain = f"""
-    NEW PORTFOLIO CONTACT MESSAGE
-    {'=' * 40}
-    
-    Language: {'German' if is_german else 'English'}
-    
-    Name: {name}
-    Email: {email}
-    Subject: {subject}
-    
-    Message:
-    {message}
-    
-    {'-' * 40}
-    Reply to: {email}
-    """
-    
     # 2. Auto-reply to visitor - IN THEIR LANGUAGE
     if is_german:
         visitor_html = f"""
@@ -179,26 +167,6 @@ def send_contact_email_task(name, email, subject, message, language='en'):
         </body>
         </html>
         """
-        
-        visitor_plain = f"""
-    Vielen Dank für Ihre Nachricht!
-    {'=' * 40}
-    
-    Sehr geehrte(r) {name},
-    
-    Vielen Dank, dass Sie mich kontaktiert haben. Ich habe Ihre Nachricht erhalten und werde mich so schnell wie möglich bei Ihnen melden (in der Regel innerhalb von 24-48 Stunden).
-    
-    Hier ist eine Kopie Ihrer Nachricht:
-    "{message}"
-    
-    Mit freundlichen Grüßen,
-    Yohannes Tekle
-    Full-Stack Entwickler
-    
-    {'-' * 40}
-    Dies ist eine automatische Bestätigung. Bitte antworten Sie nicht direkt auf diese E-Mail.
-    © {current_year} Yohannes Tekle. Alle Rechte vorbehalten.
-    """
         email_subject = "Vielen Dank für Ihre Nachricht"
     
     else:
@@ -252,55 +220,53 @@ def send_contact_email_task(name, email, subject, message, language='en'):
         </body>
         </html>
         """
-        
-        visitor_plain = f"""
-    Thank You for Reaching Out!
-    {'=' * 40}
-    
-    Dear {name},
-    
-    Thank you for contacting me. I have received your message and will get back to you as soon as possible (usually within 24-48 hours).
-    
-    Here's a copy of your message:
-    "{message}"
-    
-    Best regards,
-    Yohannes Tekle
-    Full-Stack Developer
-    
-    {'-' * 40}
-    This is an automated confirmation. Please do not reply directly to this email.
-    © {current_year} Yohannes Tekle. All rights reserved.
-    """
         email_subject = "Thank you for contacting Yohannes Tekle"
+
+    # Construct the Brevo JSON structure for handling multiple transactional destinations
+    url = "https://api.brevo.com/v3/smtp/email"
+    headers = {
+        "accept": "application/json",
+        "api-key": brevo_api_key,
+        "content-type": "application/json"
+    }
     
-    # Safe SMTP Transmission engine wrap
+    # 1. API Call Payload - Internal Notification to Admin
+    admin_payload = {
+        "sender": {"name": "Portfolio Contact Form", "email": sender_identity},
+        "to": [{"email": admin_recipient, "name": "Yohannes Admin"}],
+        "replyTo": {"email": email, "name": name},
+        "subject": f"Portfolio Contact: {subject}",
+        "htmlContent": admin_html
+    }
+    
+    # 2. API Call Payload - Auto-reply to the Visitor
+    visitor_payload = {
+        "sender": {"name": "Yohannes Tekle", "email": sender_identity},
+        "to": [{"email": email, "name": name}],
+        "subject": email_subject,
+        "htmlContent": visitor_html
+    }
+
     try:
-        print(f"Initiating SMTP handshake with {settings.EMAIL_HOST}...")
-        # Send HTML email to admin
-        send_mail(
-            subject=f"Portfolio Contact: {subject}",
-            message=admin_plain,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[settings.CONTACT_EMAIL],
-            fail_silently=False,
-            html_message=admin_html,
-        )
+        print("Initiating outbound API connection with Brevo HTTP Relay (Port 443)...")
         
-        # Send HTML email to visitor
-        send_mail(
-            subject=email_subject,
-            message=visitor_plain,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
-            fail_silently=False,
-            html_message=visitor_html,
-        )
-        success_msg = "Emails successfully sent to admin and visitor."
-        print(success_msg)
-        return success_msg
+        # Fire Notification Email to Admin
+        admin_response = requests.post(url, json=admin_payload, headers=headers, timeout=10)
+        # Fire Confirmation Email to Visitor
+        visitor_response = requests.post(url, json=visitor_payload, headers=headers, timeout=10)
+        
+        if admin_response.status_code in [200, 201, 202] and visitor_response.status_code in [200, 201, 202]:
+            success_msg = "Emails successfully sent to admin and visitor via Brevo Web API Relays."
+            print(success_msg)
+            return success_msg
+        else:
+            error_log = f"Brevo API Relay Failure. Admin HTTP status: {admin_response.status_code}, Visitor HTTP status: {visitor_response.status_code}"
+            print(error_log)
+            print(f"Details: Admin Response: {admin_response.text} | Visitor Response: {visitor_response.text}")
+            return error_log
+            
     except Exception as e:
-        error_log = f"SMTP Transmission Exception: {str(e)}"
+        error_log = f"API Transmission Exception: {str(e)}"
         print(error_log)
         return error_log
 
@@ -401,14 +367,13 @@ class ContactCreateView(generics.CreateAPIView):
                 language = 'en'
             print(f"Language: {language}")
             
-            # Check environment to determine whether to hand off to Celery or Threading
-            # This allows local testing via Docker Compose Celery worker and handles Render gracefully.
+            # Check environment to determine whether to hand off to Celery or Threading.
             is_production = os.environ.get('RENDER') == 'true' or not settings.DEBUG
             
             if is_production:
                 print("Production detected: Dispatched email via native background threading...")
-                # Run the task function inside an isolated native Python background thread.
-                # Keeps the Render API non-blocking without needing a separate worker service.
+                # Run the API task function inside an isolated native Python background thread.
+                # Keeps the Render API completely non-blocking without needing separate background workers.
                 email_thread = threading.Thread(
                     target=send_contact_email_task,
                     args=(message.name, message.email, message.subject, message.message, language)
@@ -551,6 +516,7 @@ def list_users(request):
     users = User.objects.values('id', 'username', 'email', 'is_superuser', 'is_staff')
     return Response(list(users))
 
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def safe_migrate(request):
@@ -566,6 +532,7 @@ def safe_migrate(request):
     call_command('migrate', stdout=out)
     
     return Response({'status': 'ok', 'output': out.getvalue()})
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
