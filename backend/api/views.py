@@ -53,8 +53,8 @@ def send_contact_email_task(name, email, subject, message, language='en'):
         "Content-Type": "application/json"
     }
     
-    # Your Single Sender Verified email identity
-    sender_identity = "johannes.m.tekle@gmail.com"
+    # 🌟 FIXED: Changed 'johannes' to 'yohannes' to match your verified SendGrid identity
+    sender_identity = "yohannes.m.tekle@gmail.com"
     
     # 1. HTML Email to admin (you)
     admin_html = f"""
