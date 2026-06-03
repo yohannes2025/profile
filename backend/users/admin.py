@@ -1,15 +1,16 @@
-from django.contrib import admin
-
-# Register your models here.
+# backend/users/admin.py
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.utils.html import format_html
-from .models import User, UserProfile, UserSession, UserActivityLog, Verification, PasswordReset
+
+# 🌟 FIXED: Changed 'Verification' to 'EmailVerification' to match your models file
+from .models import User, UserProfile, UserSession, UserActivityLog, EmailVerification, PasswordReset
 
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username', '', 'first_name', 'last_name', 'is_active', 'is_email_verified', 'date_joined')
+    # 🌟 FIXED: Removed the empty string element that breaks Django admin column parsing
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'is_email_verified', 'date_joined')
     list_filter = ('is_active', 'is_staff', 'is_email_verified', 'date_joined')
     search_fields = ('username', 'email', 'first_name', 'last_name')
     readonly_fields = ('last_login', 'date_joined', 'profile_views')
