@@ -22,6 +22,12 @@ jobs:
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_pass
         ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Code Placeholder
+        run: echo "Testing pipeline..."
 
   deploy-frontend:
     needs: test
