@@ -206,13 +206,15 @@ SIMPLE_JWT = {
 }
 
 # ==============================================================================
-# ALTERNATE GMAIL CONFIGURATION (BYPASSES CLOUD FIREWALLS)
+# GMAIL CONFIGURATION (UPDATED FOR PORT 587 STARTTLS)
 # ==============================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
-EMAIL_PORT = 443          # Forces SMTP over the standard SSL/HTTPS port
-EMAIL_USE_TLS = False     # Must be False for port 443
-EMAIL_USE_SSL = True      # Must be True for port 443
+
+# Switch to Port 587 and TLS to bypass Render's outbound network blocks
+EMAIL_PORT = 587          
+EMAIL_USE_TLS = True      # Must be True for port 587
+EMAIL_USE_SSL = False     # Must be False for port 587
 
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='johannes.m.tekle@gmail.com')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='your-16-digit-app-password') 
