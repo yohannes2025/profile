@@ -206,23 +206,19 @@ SIMPLE_JWT = {
 }
 
 # ==============================================================================
-# EMAIL CONFIGURATION
+# ALTERNATE GMAIL CONFIGURATION (BYPASSES CLOUD FIREWALLS)
 # ==============================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
+EMAIL_PORT = 443          # Forces SMTP over the standard SSL/HTTPS port
+EMAIL_USE_TLS = False     # Must be False for port 443
+EMAIL_USE_SSL = True      # Must be True for port 443
 
-# Switch to the standard cloud-routing mail port
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True   
-EMAIL_USE_SSL = False  
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='johannes.m.tekle@gmail.com')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='your-16-digit-app-password') 
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='johannes.m.tekle@gmail.com')
+CONTACT_EMAIL = config('CONTACT_EMAIL', default='johannes.m.tekle@gmail.com')
 
-# CRITICAL: Ensure defaults exist so GitHub Actions doesn't crash during tests
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='dummy@gmail.com')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='dummypassword') 
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='dummy@gmail.com')
-CONTACT_EMAIL = config('CONTACT_EMAIL', default='dummy@gmail.com')
-
-# TIMEOUT SAFEGUARD
 EMAIL_TIMEOUT = 10
 
 # Frontend URL
