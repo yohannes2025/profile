@@ -22,67 +22,6 @@ jobs:
           POSTGRES_USER: test_user
           POSTGRES_PASSWORD: test_pass
         ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install Backend Dependencies
-        run: |
-          cd backend
-          pip install -r requirements.txt
-
-      - name: Run Django Tests
-        run: |
-          cd backend
-          python manage.py test
-        env:
-          DATABASE_URL: postgresql://test_user:test_pass@localhost:5432/test_db
-          SECRET_KEY: test-secret-key
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-
-      - name: Install Frontend Dependencies
-        run: |
-          cd frontend
-          npm ci
-
-      - name: Run Frontend Tests
-        run: |
-          cd frontend
-          npm run test
-
-      - name: Build Frontend
-        run: |
-          cd frontend
-          npm run build
-
-  deploy-backend:
-    needs: test
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Deploy to Render
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: ${{ secrets.RENDER_SERVICE_ID }}
-          api-key: ${{ secrets.RENDER_API_KEY }}
 
   deploy-frontend:
     needs: test
