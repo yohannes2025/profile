@@ -5,11 +5,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from django.core.cache import cache
 from django.conf import settings
+from django.core.mail import EmailMultiAlternatives  # Upgraded for native HTML delivery
 from celery import shared_task
 import datetime
 import os
-import threading  # Added for decoupled, non-blocking production execution
-import requests   # Added for handling secure Brevo HTTP API calls
+import threading  # Retained for decoupled, non-blocking production execution
 
 # Internal app models and serializers
 from .models import Project, Skill, Testimonial, Experience, Education, ContactMessage
@@ -33,27 +33,15 @@ from users.models import User
 @shared_task
 def send_contact_email_task(name, email, subject, message, language='en'):
     """
-    Send two emails with HTML formatting via Brevo REST HTTP API to bypass cloud SMTP blocks:
-    1. Notification to admin (you)
-    2. Auto-reply confirmation to the visitor (in their language)
+    Send two high-fidelity HTML emails utilizing Django's native SMTP backend Engine
+    via secure STARTTLS port 587. Bypasses domain blocks and proxies safely through Google.
+    1. Notification alerting Admin (you)
+    2. Auto-reply confirmation tracking back to the visitor (Localized)
     """
     current_year = datetime.datetime.now().year
-    
-    # Determine language for auto-reply
     is_german = language == 'de'
     
-    # Securely retrieve Brevo API Key from Environment Variables
-    brevo_api_key = os.environ.get('BREVO_API_KEY')
-    if not brevo_api_key:
-        error_msg = "Brevo API Key (BREVO_API_KEY) is missing from the environment variables."
-        print(error_msg)
-        return error_msg
-        
-    # Standard fallback parameters for emails
-    admin_recipient = "johannes.m.tekle@gmail.com"
-    sender_identity = "johannes.m.tekle@gmail.com"
-    
-    # 1. HTML Email to admin (you) - Shows which language was used
+    # 1. HTML Email Template to Admin (You)
     admin_html = f"""
     <!DOCTYPE html>
     <html>
@@ -115,7 +103,7 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     </html>
     """
     
-    # 2. Auto-reply to visitor - IN THEIR LANGUAGE
+    # 2. HTML Auto-reply Template to Visitor
     if is_german:
         visitor_html = f"""
         <!DOCTYPE html>
@@ -167,8 +155,7 @@ def send_contact_email_task(name, email, subject, message, language='en'):
         </body>
         </html>
         """
-        email_subject = "Vielen Dank für Ihre Nachricht"
-    
+        visitor_subject = "Vielen Dank für Ihre Nachricht"
     else:
         visitor_html = f"""
         <!DOCTYPE html>
@@ -220,53 +207,40 @@ def send_contact_email_task(name, email, subject, message, language='en'):
         </body>
         </html>
         """
-        email_subject = "Thank you for contacting Yohannes Tekle"
-
-    # Construct the Brevo JSON structure for handling multiple transactional destinations
-    url = "https://api.brevo.com/v3/smtp/email"
-    headers = {
-        "accept": "application/json",
-        "api-key": brevo_api_key,
-        "content-type": "application/json"
-    }
-    
-    # 1. API Call Payload - Internal Notification to Admin
-    admin_payload = {
-        "sender": {"name": "Portfolio Contact Form", "email": sender_identity},
-        "to": [{"email": admin_recipient, "name": "Yohannes Admin"}],
-        "replyTo": {"email": email, "name": name},
-        "subject": f"Portfolio Contact: {subject}",
-        "htmlContent": admin_html
-    }
-    
-    # 2. API Call Payload - Auto-reply to the Visitor
-    visitor_payload = {
-        "sender": {"name": "Yohannes Tekle", "email": sender_identity},
-        "to": [{"email": email, "name": name}],
-        "subject": email_subject,
-        "htmlContent": visitor_html
-    }
+        visitor_subject = "Thank you for contacting Yohannes Tekle"
 
     try:
-        print("Initiating outbound API connection with Brevo HTTP Relay (Port 443)...")
-        
-        # Fire Notification Email to Admin
-        admin_response = requests.post(url, json=admin_payload, headers=headers, timeout=10)
-        # Fire Confirmation Email to Visitor
-        visitor_response = requests.post(url, json=visitor_payload, headers=headers, timeout=10)
-        
-        if admin_response.status_code in [200, 201, 202] and visitor_response.status_code in [200, 201, 202]:
-            success_msg = "Emails successfully sent to admin and visitor via Brevo Web API Relays."
-            print(success_msg)
-            return success_msg
-        else:
-            error_log = f"Brevo API Relay Failure. Admin HTTP status: {admin_response.status_code}, Visitor HTTP status: {visitor_response.status_code}"
-            print(error_log)
-            print(f"Details: Admin Response: {admin_response.text} | Visitor Response: {visitor_response.text}")
-            return error_log
-            
+        print("Initiating SMTP execution routing to backend engine...")
+
+        # A. DISPATCH NOTIFICATION EMAIL TO ADMIN (YOU)
+        admin_text_fallback = f"New Portfolio message from {name} ({email}): {message}"
+        admin_mail = EmailMultiAlternatives(
+            subject=f"Portfolio Contact: {subject}",
+            body=admin_text_fallback,
+            from_email=settings.EMAIL_HOST_USER,   # Authorized Gmail sender mapping
+            to=[settings.CONTACT_EMAIL],           # Lands straight in your inbox
+            reply_to=[email]                       # Quick hitting 'Reply' redirects back to the visitor
+        )
+        admin_mail.attach_alternative(admin_html, "text/html")
+        admin_mail.send(fail_silently=False)
+        print("Notification safely dispatched to Admin.")
+
+        # B. DISPATCH AUTO-REPLY CONFIRMATION TO VISITOR
+        visitor_text_fallback = f"Hello {name}, thank you for contacting me. We have received your message."
+        visitor_mail = EmailMultiAlternatives(
+            subject=visitor_subject,
+            body=visitor_text_fallback,
+            from_email=settings.EMAIL_HOST_USER,   # Sent through authorized Google channel
+            to=[email]                             # Drops directly into user's mailbox
+        )
+        visitor_mail.attach_alternative(visitor_html, "text/html")
+        visitor_mail.send(fail_silently=False)
+        print("Auto-reply safely dispatched to Visitor.")
+
+        return "Emails successfully sent to admin and visitor via Native SMTP Relay Engine."
+
     except Exception as e:
-        error_log = f"API Transmission Exception: {str(e)}"
+        error_log = f"Native SMTP Engine Error: {str(e)}"
         print(error_log)
         return error_log
 
@@ -372,7 +346,7 @@ class ContactCreateView(generics.CreateAPIView):
             
             if is_production:
                 print("Production detected: Dispatched email via native background threading...")
-                # Run the API task function inside an isolated native Python background thread.
+                # Run the SMTP task function inside an isolated native Python background thread.
                 # Keeps the Render API completely non-blocking without needing separate background workers.
                 email_thread = threading.Thread(
                     target=send_contact_email_task,
@@ -382,7 +356,6 @@ class ContactCreateView(generics.CreateAPIView):
                 email_thread.start()
             else:
                 print("Local environment: Handing task execution off to Celery queue...")
-                # Works safely now that @shared_task decorator is active
                 send_contact_email_task.delay(
                     message.name, 
                     message.email, 
@@ -454,7 +427,6 @@ def run_migrations(request):
     import io
     import sys
     
-    # Corrected condition: block migrations via HTTP endpoint if not in debug mode
     if not settings.DEBUG:
         return Response({'error': 'Not allowed in production'}, status=403)
     

@@ -183,8 +183,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
     'DEFAULT_THROTTLE_CLASSES': [
-        # Point these to your new custom classes
-        'config.throttling.SafeAnonRateThrottle',  # Replace 'config' with your actual app/folder name if different
+        'config.throttling.SafeAnonRateThrottle',  
         'config.throttling.SafeUserRateThrottle',
     ],
     'DEFAULT_THROTTLE_RATES': {
@@ -206,15 +205,15 @@ SIMPLE_JWT = {
 }
 
 # ==============================================================================
-# GMAIL CONFIGURATION (UPDATED FOR PORT 587 STARTTLS)
+# GMAIL CONFIGURATION (ROUTED DYNAMICALLY VIA ENV_VAR CARRIERS)
 # ==============================================================================
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 
-# Switch to Port 587 and TLS to bypass Render's outbound network blocks
-EMAIL_PORT = 587          
-EMAIL_USE_TLS = True      # Must be True for port 587
-EMAIL_USE_SSL = False     # Must be False for port 587
+# Cast port parameters explicitly to avoid integer vs string payload evaluation issues
+EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)          
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)      
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)     
 
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='johannes.m.tekle@gmail.com')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='your-16-digit-app-password') 
@@ -224,7 +223,7 @@ CONTACT_EMAIL = config('CONTACT_EMAIL', default='johannes.m.tekle@gmail.com')
 EMAIL_TIMEOUT = 10
 
 # Frontend URL
-FRONTEND_URL = 'http://localhost:5173'
+FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:5173')
 
 # Cache (local memory for development)
 CACHES = {
@@ -251,11 +250,9 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'API documentation for profile, blog, and project features.',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    # This setting cleanly differentiates conflicting class names across different apps
     'POSTPROCESSING_HOOKS': [
         'drf_spectacular.hooks.postprocess_schema_enums',
     ],
-    # Tell spectacular how to split identical component names automatically:
     'COMPONENT_SPLIT_REQUEST': True,
 }
 
