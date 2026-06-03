@@ -5,11 +5,11 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from django.core.cache import cache
 from django.conf import settings
-from django.core.mail import EmailMultiAlternatives  # Upgraded for native HTML delivery
 from celery import shared_task
 import datetime
 import os
-import threading  # Retained for decoupled, non-blocking production execution
+import threading  # For non-blocking production execution on Render
+import requests   # Used for secure HTTP API calls over Port 443
 
 # Internal app models and serializers
 from .models import Project, Skill, Testimonial, Experience, Education, ContactMessage
@@ -33,15 +33,30 @@ from users.models import User
 @shared_task
 def send_contact_email_task(name, email, subject, message, language='en'):
     """
-    Send two high-fidelity HTML emails utilizing Django's native SMTP backend Engine
-    via secure STARTTLS port 587. Bypasses domain blocks and proxies safely through Google.
-    1. Notification alerting Admin (you)
-    2. Auto-reply confirmation tracking back to the visitor (Localized)
+    Send two emails with HTML formatting via Twilio SendGrid Web API (Port 443)
+    to completely bypass Render's outbound SMTP firewall blocks.
+    1. Notification to admin (you)
+    2. Auto-reply confirmation to the visitor (Localized)
     """
     current_year = datetime.datetime.now().year
     is_german = language == 'de'
     
-    # 1. HTML Email Template to Admin (You)
+    # Securely retrieve Twilio SendGrid API Key from Environment Variables
+    sendgrid_api_key = os.environ.get('SENDGRID_API_KEY')
+    if not sendgrid_api_key:
+        print("SendGrid API Key (SENDGRID_API_KEY) is missing from Render environment variables.")
+        return "Missing API Key"
+        
+    url = "https://api.sendgrid.com/v3/mail/send"
+    headers = {
+        "Authorization": f"Bearer {sendgrid_api_key}",
+        "Content-Type": "application/json"
+    }
+    
+    # Your Single Sender Verified email identity
+    sender_identity = "johannes.m.tekle@gmail.com"
+    
+    # 1. HTML Email to admin (you)
     admin_html = f"""
     <!DOCTYPE html>
     <html>
@@ -103,7 +118,7 @@ def send_contact_email_task(name, email, subject, message, language='en'):
     </html>
     """
     
-    # 2. HTML Auto-reply Template to Visitor
+    # 2. Auto-reply to visitor
     if is_german:
         visitor_html = f"""
         <!DOCTYPE html>
@@ -209,40 +224,46 @@ def send_contact_email_task(name, email, subject, message, language='en'):
         """
         visitor_subject = "Thank you for contacting Yohannes Tekle"
 
+    # A. Twilio SendGrid Payload Structure - Notification to Admin (You)
+    admin_payload = {
+        "personalizations": [{
+            "to": [{"email": sender_identity}],
+            "subject": f"Portfolio Contact: {subject}"
+        }],
+        "from": {"email": sender_identity, "name": "Portfolio Contact Form"},
+        "reply_to": {"email": email, "name": name},
+        "content": [{"type": "text/html", "value": admin_html}]
+    }
+
+    # B. Twilio SendGrid Payload Structure - Auto-Reply to Visitor
+    visitor_payload = {
+        "personalizations": [{
+            "to": [{"email": email}],
+            "subject": visitor_subject
+        }],
+        "from": {"email": sender_identity, "name": "Yohannes Tekle"},
+        "content": [{"type": "text/html", "value": visitor_html}]
+    }
+
     try:
-        print("Initiating SMTP execution routing to backend engine...")
-
-        # A. DISPATCH NOTIFICATION EMAIL TO ADMIN (YOU)
-        admin_text_fallback = f"New Portfolio message from {name} ({email}): {message}"
-        admin_mail = EmailMultiAlternatives(
-            subject=f"Portfolio Contact: {subject}",
-            body=admin_text_fallback,
-            from_email=settings.EMAIL_HOST_USER,   # Authorized Gmail sender mapping
-            to=[settings.CONTACT_EMAIL],           # Lands straight in your inbox
-            reply_to=[email]                       # Quick hitting 'Reply' redirects back to the visitor
-        )
-        admin_mail.attach_alternative(admin_html, "text/html")
-        admin_mail.send(fail_silently=False)
-        print("Notification safely dispatched to Admin.")
-
-        # B. DISPATCH AUTO-REPLY CONFIRMATION TO VISITOR
-        visitor_text_fallback = f"Hello {name}, thank you for contacting me. We have received your message."
-        visitor_mail = EmailMultiAlternatives(
-            subject=visitor_subject,
-            body=visitor_text_fallback,
-            from_email=settings.EMAIL_HOST_USER,   # Sent through authorized Google channel
-            to=[email]                             # Drops directly into user's mailbox
-        )
-        visitor_mail.attach_alternative(visitor_html, "text/html")
-        visitor_mail.send(fail_silently=False)
-        print("Auto-reply safely dispatched to Visitor.")
-
-        return "Emails successfully sent to admin and visitor via Native SMTP Relay Engine."
-
+        print("Initiating outbound API connection with Twilio SendGrid REST Engine (Port 443)...")
+        
+        # Fire Notification Email to Admin
+        admin_response = requests.post(url, json=admin_payload, headers=headers, timeout=10)
+        # Fire Confirmation Email to Visitor
+        visitor_response = requests.post(url, json=visitor_payload, headers=headers, timeout=10)
+        
+        if admin_response.status_code in [200, 201, 202] and visitor_response.status_code in [200, 201, 202]:
+            print("Emails successfully sent to admin and visitor via Twilio SendGrid HTTP REST API.")
+            return "Success"
+        else:
+            print(f"SendGrid API Error. Admin Status: {admin_response.status_code}, Visitor Status: {visitor_response.status_code}")
+            print(f"Details: Admin: {admin_response.text} | Visitor: {visitor_response.text}")
+            return "API Error"
+            
     except Exception as e:
-        error_log = f"Native SMTP Engine Error: {str(e)}"
-        print(error_log)
-        return error_log
+        print(f"HTTP Transmission Exception via SendGrid: {str(e)}")
+        return str(e)
 
 
 class ContactThrottle(throttling.SimpleRateThrottle):
@@ -341,13 +362,10 @@ class ContactCreateView(generics.CreateAPIView):
                 language = 'en'
             print(f"Language: {language}")
             
-            # Check environment to determine whether to hand off to Celery or Threading.
             is_production = os.environ.get('RENDER') == 'true' or not settings.DEBUG
             
             if is_production:
                 print("Production detected: Dispatched email via native background threading...")
-                # Run the SMTP task function inside an isolated native Python background thread.
-                # Keeps the Render API completely non-blocking without needing separate background workers.
                 email_thread = threading.Thread(
                     target=send_contact_email_task,
                     args=(message.name, message.email, message.subject, message.message, language)
