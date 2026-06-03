@@ -70,6 +70,12 @@ jobs:
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
+      - name: Clear Cache and Lockfiles
+        run: |
+          rm -rf node_modules package-lock.json
+          npm cache clean --force
+        working-directory: ./frontend
+
       - name: Install Frontend Dependencies
         run: npm install
         working-directory: ./frontend
