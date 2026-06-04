@@ -1,6 +1,13 @@
 // frontend/src/components/Hero.tsx
 import { motion } from "framer-motion";
-import { Download, ArrowRight, Github, Linkedin, Mail } from "lucide-react";
+import {
+  Download,
+  ArrowRight,
+  Github,
+  Linkedin,
+  X,
+  Instagram,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 
@@ -93,7 +100,7 @@ export default function Hero() {
               className="flex gap-4"
             >
               <a
-                href="https://github.com/yohannes"
+                href="https://www.github.com/yohannes2025"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-cyan-100 dark:hover:bg-cyan-900 transition-colors"
@@ -101,7 +108,7 @@ export default function Hero() {
                 <Github size={24} />
               </a>
               <a
-                href="https://linkedin.com/in/yohannes"
+                href="https://www.linkedin.com/in/yohannes-mebrahtu-tekle-98a01322a/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-cyan-100 dark:hover:bg-cyan-900 transition-colors"
@@ -109,10 +116,20 @@ export default function Hero() {
                 <Linkedin size={24} />
               </a>
               <a
-                href="mailto:yohannes.m.tekle@gmail.com"
+                href="https://www.x.com/YohannesMT2025"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-cyan-100 dark:hover:bg-cyan-900 transition-colors"
               >
-                <Mail size={24} />
+                <X size={24} />
+              </a>
+              <a
+                href="https://www.instagram.com/yohannes.mebrahtu.5"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-cyan-100 dark:hover:bg-cyan-900 transition-colors"
+              >
+                <Instagram size={24} />
               </a>
             </motion.div>
           </motion.div>

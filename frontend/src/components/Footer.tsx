@@ -1,5 +1,5 @@
 // frontend/src/components/Footer.tsx
-import { Github, Linkedin, Twitter, Mail, Heart } from "lucide-react";
+import { Github, Linkedin, X, Instagram, Heart } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function Footer() {
@@ -16,7 +16,7 @@ export default function Footer() {
 
           <div className="flex gap-4">
             <a
-              href="https://github.com/yohannes"
+              href="https://www.github.com/yohannes2025"
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-500 hover:text-cyan-500 transition-colors"
@@ -24,7 +24,7 @@ export default function Footer() {
               <Github size={20} />
             </a>
             <a
-              href="https://linkedin.com/in/yohannes"
+              href="https://www.linkedin.com/in/yohannes-mebrahtu-tekle-98a01322a/"
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-500 hover:text-cyan-500 transition-colors"
@@ -32,18 +32,20 @@ export default function Footer() {
               <Linkedin size={20} />
             </a>
             <a
-              href="https://twitter.com/yohannes"
+              href="https://www.x.com/YohannesMT2025"
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-500 hover:text-cyan-500 transition-colors"
             >
-              <Twitter size={20} />
+              <X size={20} />
             </a>
             <a
-              href="mailto:yohannes.m.tekle@gmail.com"
+              href="https://www.instagram.com/yohannes.mebrahtu.5"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-slate-500 hover:text-cyan-500 transition-colors"
             >
-              <Mail size={20} />
+              <Instagram size={20} />
             </a>
           </div>
 
