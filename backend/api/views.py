@@ -189,7 +189,7 @@ def send_contact_email_task(name, email, subject, message, language='en'):
         <body>
             <div class="container">
                 <div class="header">
-                    <h2 style="margin: 0;">Thank You for Reaching Out! 🙏</h2>
+                    <h2 style="margin: 0;">Thank You for Reaching Out!</h2>
                 </div>
                 <div class="content">
                     <p>Dear <strong>{name}</strong>,</p>
@@ -203,8 +203,8 @@ def send_contact_email_task(name, email, subject, message, language='en'):
                     
                     <p>In the meantime, feel free to:</p>
                     <ul>
-                        <li>📱 Connect with me on <a href="https://www.linkedin.com/in/yohannes-mebrahtu-tekle-98a01322a/" style="color: #0891b2;">LinkedIn</a></li>
-                        <li>💻 Check out my <a href="https://www.github.com/yohannes2025" style="color: #0891b2;">GitHub</a> projects</li>
+                        <li>Connect with me on <a href="https://www.linkedin.com/in/yohannes-mebrahtu-tekle-98a01322a/" style="color: #0891b2;">LinkedIn</a></li>
+                        <li>Check out my <a href="https://www.github.com/yohannes2025" style="color: #0891b2;">GitHub</a> projects</li>
                     </ul>
                     
                     <hr>
@@ -252,6 +252,21 @@ def send_contact_email_task(name, email, subject, message, language='en'):
         admin_response = requests.post(url, json=admin_payload, headers=headers, timeout=10)
         # Fire Confirmation Email to Visitor
         visitor_response = requests.post(url, json=visitor_payload, headers=headers, timeout=10)
+        # Debug logging
+        print("=" * 60)
+        print("SENDGRID RESPONSE LOG")
+        print("=" * 60)
+
+        print(f"Admin Status Code: {admin_response.status_code}")
+        print(f"Visitor Status Code: {visitor_response.status_code}")
+
+        print("\nAdmin Response:")
+        print(admin_response.text)
+
+        print("\nVisitor Response:")
+        print(visitor_response.text)
+
+        print("=" * 60)
         
         if admin_response.status_code in [200, 201, 202] and visitor_response.status_code in [200, 201, 202]:
             print("Emails successfully sent to admin and visitor via Twilio SendGrid HTTP REST API.")
