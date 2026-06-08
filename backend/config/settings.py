@@ -207,22 +207,32 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
 }
-
 # ==============================================================================
-# GMAIL CONFIGURATION (ROUTED DYNAMICALLY VIA ENV_VAR CARRIERS)
+# SENDGRID EMAIL CONFIGURATION
 # ==============================================================================
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = config('EMAIL_HOST', default='smtp.gmail.com')
 
-# Cast port parameters explicitly to avoid integer vs string payload evaluation issues
-EMAIL_PORT = config('EMAIL_PORT', default=587, cast=int)          
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)      
-EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)     
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='johannes.m.tekle@gmail.com')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='your-16-digit-app-password') 
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='johannes.m.tekle@gmail.com')
-CONTACT_EMAIL = config('CONTACT_EMAIL', default='johannes.m.tekle@gmail.com')
+EMAIL_HOST = config("EMAIL_HOST", default="smtp.sendgrid.net")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+EMAIL_USE_SSL = config("EMAIL_USE_SSL", default=False, cast=bool)
+
+# IMPORTANT: Username is literally "apikey"
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="apikey")
+
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+
+DEFAULT_FROM_EMAIL = config(
+    "DEFAULT_FROM_EMAIL",
+    default="contact@yohannestekle.com"
+)
+
+CONTACT_EMAIL = config(
+    "CONTACT_EMAIL",
+    default="yohannes.m.tekle@gmail.com"
+)
 
 EMAIL_TIMEOUT = 10
 
