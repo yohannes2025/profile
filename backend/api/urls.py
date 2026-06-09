@@ -6,6 +6,7 @@ from .views import (
     ExperienceListView, EducationListView, ContactCreateView,
     DashboardStatsView
 )
+from .views import recent_blog_posts
 
 urlpatterns = [
     # Catches the bare /api/ root path passed down from the core URLs inclusion
@@ -18,4 +19,5 @@ urlpatterns = [
     path('education/', EducationListView.as_view(), name='education'),
     path('contact/', ContactCreateView.as_view(), name='contact'),
     path('dashboard/stats/', DashboardStatsView.as_view(), name='dashboard-stats'),
+    path('recent-posts/', recent_blog_posts, name='recent-posts'),
 ]
