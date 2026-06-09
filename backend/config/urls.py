@@ -4,12 +4,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import JsonResponse
+
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from api.views import recent_blog_posts, health_check, create_superuser, run_migrations, list_users, safe_migrate, test_post
+
+# SAFE IMPORT (IMPORTANT FIX)
+from api import views as api_views
 
 
 def api_root(request):
-    """Root endpoint showing available API endpoints"""
     return JsonResponse({
         'message': 'Welcome to Portfolio API',
         'version': '1.0.0',
@@ -17,46 +19,37 @@ def api_root(request):
             'admin': '/admin/',
             'api_docs': '/api/docs/',
             'api_schema': '/api/schema/',
-            'users': '/api/users/',
             'projects': '/api/projects/',
             'skills': '/api/skills/',
-            'testimonials': '/api/testimonials/',
-            'experiences': '/api/experiences/',
-            'education': '/api/education/',
-            'blog': '/api/blog/',
+            'contact': '/api/contact/',
             'recent_posts': '/api/recent-posts/',
             'health': '/healthz',
-            'migrate': '/migrate/',
-            'safe-migrate': '/safe-migrate/',
-            'create_superuser': '/create-superuser/',
-            'list-users': '/list-users/',
-            'test-post': '/api/test-post/',
-        },
-        'documentation': 'Visit /api/docs/ for interactive API documentation'
+        }
     })
 
 
 urlpatterns = [
     path('', api_root, name='api-root'),
     path('admin/', admin.site.urls),
-    path('healthz', health_check, name='health-check'), 
-    path('migrate/', run_migrations, name='migrate'),
-    path('safe-migrate/', safe_migrate, name='safe-migrate'),
-    path('create-superuser/', create_superuser, name='create-superuser'),
-    path('list-users/', list_users, name='list-users'),
-    path('api/test-post/', test_post, name='test-post'),  # ADD THIS LINE
+
+    # system endpoints
+    path('healthz', api_views.health_check, name='health-check'),
+    path('migrate/', api_views.run_migrations, name='migrate'),
+    path('safe-migrate/', api_views.safe_migrate, name='safe-migrate'),
+    path('create-superuser/', api_views.create_superuser, name='create-superuser'),
+    path('list-users/', api_views.list_users, name='list-users'),
+    path('api/test-post/', api_views.test_post, name='test-post'),
+
+    # API docs
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/users/', include('users.urls')),
-    
-    # --- Strict Catchers for the Base API Route ---
-    path('api', api_root, name='api-root-noslash'),
-    path('api/', api_root, name='api-root-slash'),
-    # ----------------------------------------------
 
+    # app routes
     path('api/', include('api.urls')),
     path('api/blog/', include('blog.urls')),
-    path('api/recent-posts/', recent_blog_posts, name='recent-posts'),
+
+    # IMPORTANT: recent posts moved here safely
+    path('api/recent-posts/', api_views.recent_blog_posts, name='recent-posts'),
 ]
 
 if settings.DEBUG:
