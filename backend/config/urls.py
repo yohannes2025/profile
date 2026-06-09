@@ -7,51 +7,58 @@ from django.http import JsonResponse
 
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
-# SAFE IMPORT (IMPORTANT FIX)
-from api import views as api_views
+from api.views import (
+    health_check,
+    create_superuser,
+    run_migrations,
+    list_users,
+    safe_migrate,
+    test_post,
+    recent_blog_posts,
+)
 
 
 def api_root(request):
     return JsonResponse({
-        'message': 'Welcome to Portfolio API',
-        'version': '1.0.0',
-        'endpoints': {
-            'admin': '/admin/',
-            'api_docs': '/api/docs/',
-            'api_schema': '/api/schema/',
-            'projects': '/api/projects/',
-            'skills': '/api/skills/',
-            'contact': '/api/contact/',
-            'recent_posts': '/api/recent-posts/',
-            'health': '/healthz',
+        "message": "Portfolio API",
+        "version": "1.0",
+        "endpoints": {
+            "projects": "/api/projects/",
+            "skills": "/api/skills/",
+            "blog": "/api/blog/",
+            "recent_posts": "/api/recent-posts/",
+            "health": "/healthz",
         }
     })
 
 
 urlpatterns = [
-    path('', api_root, name='api-root'),
-    path('admin/', admin.site.urls),
+    path("", api_root),
 
-    # system endpoints
-    path('healthz', api_views.health_check, name='health-check'),
-    path('migrate/', api_views.run_migrations, name='migrate'),
-    path('safe-migrate/', api_views.safe_migrate, name='safe-migrate'),
-    path('create-superuser/', api_views.create_superuser, name='create-superuser'),
-    path('list-users/', api_views.list_users, name='list-users'),
-    path('api/test-post/', api_views.test_post, name='test-post'),
+    path("admin/", admin.site.urls),
 
-    # API docs
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    # Health
+    path("healthz", health_check),
 
-    # app routes
-    path('api/', include('api.urls')),
-    path('api/blog/', include('blog.urls')),
+    # API core
+    path("api/", include("api.urls")),
+    path("api/users/", include("users.urls")),
+    path("api/blog/", include("blog.urls")),
 
-    # IMPORTANT: recent posts moved here safely
-    path('api/recent-posts/', api_views.recent_blog_posts, name='recent-posts'),
+    # Blog shortcut endpoint
+    path("api/recent-posts/", recent_blog_posts),
+
+    # Docs
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema")),
+
+    # Utilities
+    path("migrate/", run_migrations),
+    path("safe-migrate/", safe_migrate),
+    path("create-superuser/", create_superuser),
+    path("list-users/", list_users),
+    path("api/test-post/", test_post),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
