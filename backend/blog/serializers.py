@@ -1,4 +1,4 @@
-# blog/serializers.py
+# backend/blog/serializers.py
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from drf_spectacular.utils import extend_schema_field  # Import added for type hints

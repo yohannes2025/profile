@@ -1,3 +1,5 @@
+# backend/api/serializers.py
+
 from rest_framework import serializers
 from .models import Project, Skill, Testimonial, Experience, Education, ContactMessage
 from blog.models import BlogPost, Category, Tag, Comment

@@ -1,3 +1,5 @@
+# backend/blog/views.py
+
 from django.db.models import Q, Count
 from django.core.cache import cache
 from django.utils import timezone

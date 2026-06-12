@@ -1,4 +1,4 @@
-// src/components/Skills.tsx
+// frontend/src/components/Skills.tsx
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useQuery } from "@tanstack/react-query";

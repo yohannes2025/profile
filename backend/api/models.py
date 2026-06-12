@@ -1,4 +1,4 @@
-# api/models.py
+# backend/api/models.py
 from django.db import models
 from django.utils import timezone
 from ckeditor.fields import RichTextField

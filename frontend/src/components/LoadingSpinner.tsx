@@ -1,3 +1,5 @@
+// frontend/src/components/LoadingSpinner.tsx
+
 import { motion } from 'framer-motion';
 
 export default function LoadingSpinner() {
