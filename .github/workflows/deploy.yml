@@ -8,7 +8,8 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  NODE_VERSION: "20"
+  NODE_VERSION: "24" # Changed from 20 to 24
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Added to force Node 24
 
 jobs:
   # 1. TEST JOB
@@ -58,7 +59,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ env.NODE_VERSION }} # Now uses 24
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Clear Cache and Lockfiles
@@ -79,7 +80,7 @@ jobs:
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          VITE_API_URL: ${{ secrets.VITE_API_URL }}  # <-- This passes the URL to the compiler!
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
       - name: Deploy Project Artifacts to Vercel
         run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} --cwd ./frontend
         env:
