@@ -53,6 +53,9 @@ jobs:
           DB_PORT: 5432
           SECRET_KEY: test_secret_key_for_ci
           DEBUG: "True"
+          # Environment variables required by settings.py
+          EMAIL_HOST_PASSWORD: ${{ secrets.EMAIL_HOST_PASSWORD }}
+          EMAIL_HOST_USER: ${{ secrets.EMAIL_HOST_USER }}
 
   # 2. FRONTEND DEPLOY JOB
   deploy-frontend:
