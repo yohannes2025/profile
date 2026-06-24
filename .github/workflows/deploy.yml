@@ -8,13 +8,14 @@ on:
 
 env:
   PYTHON_VERSION: "3.12"
-  NODE_VERSION: "24" # Changed from 20 to 24
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Added to force Node 24
+  NODE_VERSION: "24"
 
 jobs:
   # 1. TEST JOB
   test:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Add this at job level
     services:
       postgres:
         image: postgres:16
@@ -53,13 +54,15 @@ jobs:
   deploy-frontend:
     needs: test
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Add this at job level
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION }} # Now uses 24
+          node-version: ${{ env.NODE_VERSION }}
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
       - name: Clear Cache and Lockfiles
@@ -92,6 +95,8 @@ jobs:
   deploy-backend:
     needs: test
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true # Add this at job level
     if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
