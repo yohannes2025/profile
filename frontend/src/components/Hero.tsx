@@ -12,6 +12,11 @@ export default function Hero() {
     console.log("Hero - Language changed to:", i18n.language);
   }, [i18n.language]);
 
+  // Get the correct button text based on language
+  const getContactButtonText = () => {
+    return i18n.language === "de" ? "Kontaktieren Sie mich" : "Contact Me";
+  };
+
   return (
     <section id="home" className="min-h-screen flex items-center pt-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -68,14 +73,14 @@ export default function Hero() {
                 {t("hero.viewProjects")} <ArrowRight size={18} />
               </motion.a>
 
-              {/* Contact Me button - Same color as View Projects */}
+              {/* Contact Me button with conditional text */}
               <motion.a
                 href="#contact"
                 className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-medium transition-colors flex items-center gap-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                Contact Me <Mail size={18} />
+                {getContactButtonText()} <Mail size={18} />
               </motion.a>
             </motion.div>
 
