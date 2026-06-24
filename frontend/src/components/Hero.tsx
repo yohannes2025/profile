@@ -1,13 +1,6 @@
 // frontend/src/components/Hero.tsx
 import { motion } from "framer-motion";
-import {
-  Download,
-  ArrowRight,
-  Github,
-  Linkedin,
-  X,
-  Instagram,
-} from "lucide-react";
+import { ArrowRight, Github, Linkedin, X, Instagram, Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useEffect } from "react";
 
@@ -18,13 +11,6 @@ export default function Hero() {
   useEffect(() => {
     console.log("Hero - Language changed to:", i18n.language);
   }, [i18n.language]);
-
-  // Get the correct CV based on language
-  const getCVPath = () => {
-    return i18n.language === "de"
-      ? "/cv/CV_Yohannes_Tekle_DE.pdf"
-      : "/cv/CV_Yohannes_Tekle_EN.pdf";
-  };
 
   return (
     <section id="home" className="min-h-screen flex items-center pt-16">
@@ -82,14 +68,14 @@ export default function Hero() {
                 {t("hero.viewProjects")} <ArrowRight size={18} />
               </motion.a>
 
+              {/* Contact Me button - Same color as View Projects */}
               <motion.a
-                href={getCVPath()}
-                download
-                className="px-6 py-3 border border-slate-300 dark:border-slate-700 rounded-xl font-medium hover:border-cyan-500 hover:text-cyan-500 transition-colors flex items-center gap-2"
+                href="#contact"
+                className="px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-medium transition-colors flex items-center gap-2"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                {t("hero.downloadCV")} <Download size={18} />
+                Contact Me <Mail size={18} />
               </motion.a>
             </motion.div>
 

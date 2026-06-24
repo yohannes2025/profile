@@ -32,7 +32,8 @@
     "cloudDeployments": "Cloud-Deployments",
     "certifications": "Zertifizierungen",
     "myPassion": "Meine Leidenschaft",
-    "passionText": "Ich bin leidenschaftlich daran interessiert, Technologie zu schaffen, die Menschen hilft und das Web zu einem besseren Ort macht."
+    "passionText": "Ich bin leidenschaftlich daran interessiert, Technologie zu schaffen, die Menschen hilft und das Web zu einem besseren Ort macht.",
+    "downloadCV": "Lebenslauf herunterladen"
   },
   "skills": {
     "title": "Fähigkeiten & Technologien",

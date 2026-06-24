@@ -32,7 +32,8 @@
     "cloudDeployments": "Cloud Deployments",
     "certifications": "Certifications",
     "myPassion": "My Passion",
-    "passionText": "I'm passionate about creating technology that helps people and makes the web a better place."
+    "passionText": "I'm passionate about creating technology that helps people and makes the web a better place.",
+    "downloadCV": "Download CV"
   },
   "skills": {
     "title": "Skills & Technologies",

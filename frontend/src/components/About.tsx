@@ -1,12 +1,12 @@
 // src/components/About.tsx
 import { motion } from "framer-motion";
-import { Award, Heart, Code, Database, Cloud } from "lucide-react";
+import { Award, Heart, Code, Database, Cloud, Download } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { fetchExperiences, fetchEducation } from "../services/api";
 
 export default function About() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: experiences, isLoading: expLoading } = useQuery({
     queryKey: ["experiences"],
     queryFn: fetchExperiences,
@@ -16,6 +16,18 @@ export default function About() {
     queryKey: ["education"],
     queryFn: fetchEducation,
   });
+
+  // Get the correct CV based on language
+  const getCVPath = () => {
+    return i18n.language === "de"
+      ? "/cv/CV_Yohannes_Tekle_DE.pdf"
+      : "/cv/CV_Yohannes_Tekle_EN.pdf";
+  };
+
+  // Get the correct button text based on language
+  const getCVButtonText = () => {
+    return i18n.language === "de" ? "Lebenslauf Herunterladen" : "Download CV";
+  };
 
   if (expLoading || eduLoading) {
     return (
@@ -55,6 +67,7 @@ export default function About() {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12">
+          {/* Left Column */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -83,8 +96,30 @@ export default function About() {
                 ))}
               </div>
             </div>
+
+            {/* Download CV Button - Conditional text based on language */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <a
+                href={getCVPath()}
+                download
+                className="inline-flex items-center gap-2 px-6 py-3 bg-cyan-500 hover:bg-cyan-600 text-white rounded-xl font-medium transition-colors shadow-lg hover:shadow-xl"
+              >
+                <Download size={18} />
+                {getCVButtonText()}
+              </a>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+                {i18n.language === "de"
+                  ? "Lebenslauf herunterladen"
+                  : "Download my CV"}
+              </p>
+            </motion.div>
           </motion.div>
 
+          {/* Right Column */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
