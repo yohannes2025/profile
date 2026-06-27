@@ -8,6 +8,10 @@ from decouple import config
 from datetime import timedelta
 from dotenv import load_dotenv
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 # ==============================================================================
 # BASE DIRECTORY
 # ==============================================================================
@@ -70,6 +74,10 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    
+    'cloudinary_storage',
+    'cloudinary',
+    
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
 
@@ -79,12 +87,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
-    'ckeditor',
     'drf_spectacular',
 
     'api',
     'blog',
     'users',
+    'django_ckeditor_5',
 ]
 
 # ==============================================================================
@@ -108,7 +116,8 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Ensure your custom templates directory is listed right here:
+        'DIRS': [BASE_DIR / 'templates'], 
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -292,3 +301,23 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
+
+# Add configuration options for the CKEditor 5 build
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'heading', '|', 'bold', 'italic', 'link', 'bulletedList', 
+            'numberedList', 'blockQuote', 'insertTable', '|', 
+            'outdent', 'indent', '|', 'sourceEditing', 'undo', 'redo'
+        ],
+        'height': 300,
+        'width': '100%',
+    }
+}
+
+cloudinary.config(
+    cloud_name = "your_cloud_name",
+    api_key = "your_api_key",
+    api_secret = "your_api_secret",
+    secure = True
+)

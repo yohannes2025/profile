@@ -1,6 +1,6 @@
+# backend/blog/admin.py
 from django.contrib import admin
 from .models import BlogPost, Category, Tag, Comment
-from ckeditor.widgets import CKEditorWidget
 from django.db import models
 
 @admin.register(Category)
@@ -23,10 +23,8 @@ class BlogPostAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
     readonly_fields = ('views', 'created_at', 'updated_at')
     list_editable = ('published',)
-    formfield_overrides = {
-        models.TextField: {'widget': CKEditorWidget()},
-    }
     filter_horizontal = ('tags',)
+    
     fieldsets = (
         ('Basic Information', {
             'fields': ('title', 'slug', 'author', 'category', 'tags')

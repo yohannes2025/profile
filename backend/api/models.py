@@ -1,7 +1,7 @@
 # backend/api/models.py
 from django.db import models
 from django.utils import timezone
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field  # Upgraded package
 from cloudinary.models import CloudinaryField
 
 
@@ -9,7 +9,8 @@ class Project(models.Model):
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
     description = models.TextField()
-    content = RichTextField(blank=True)
+    # Migrated from RichTextField to CKEditor5Field
+    content = CKEditor5Field('Content', config_name='default', blank=True)
     image = CloudinaryField('image', folder='projects/')
     github_link = models.URLField()
     live_demo = models.URLField(blank=True)

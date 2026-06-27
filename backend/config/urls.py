@@ -39,6 +39,9 @@ urlpatterns = [
     path("", api_root, name="api-root"),
 
     path("admin/", admin.site.urls),
+    
+    # ✅ Mounted rich text image/file upload internal routing endpoints
+    path("ckeditor5/", include('django_ckeditor_5.urls')),
 
     path("healthz", health_check, name="health-check"),
 

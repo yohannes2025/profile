@@ -2,7 +2,7 @@
 from django.conf import settings
 from django.db import models
 from cloudinary.models import CloudinaryField
-from ckeditor.fields import RichTextField
+from django_ckeditor_5.fields import CKEditor5Field  # Upgraded package
 
 
 class Category(models.Model):
@@ -28,7 +28,8 @@ class BlogPost(models.Model):
     title = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     excerpt = models.TextField()
-    content = RichTextField()
+    # Migrated from RichTextField to CKEditor5Field
+    content = CKEditor5Field('Content', config_name='default')
     featured_image = CloudinaryField('image', folder='blog/', blank=True, null=True)
     tags = models.ManyToManyField(Tag, blank=True)
     published = models.BooleanField(default=False)

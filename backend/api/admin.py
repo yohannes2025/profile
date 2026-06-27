@@ -1,3 +1,4 @@
+# backend/api/admin.py
 from django.contrib import admin
 from .models import Project, Skill, Testimonial, Experience, Education, ContactMessage
 

@@ -148,7 +148,7 @@ export default function Hero() {
 
               <div className="absolute inset-2 rounded-full overflow-hidden bg-gradient-to-br from-slate-700 to-slate-900 shadow-xl">
                 <img
-                  src="/images/profile.png"
+                  src="https://res-console.cloudinary.com/di2vmvljd/thumbnails/transform/v1/image/upload/Y19maWxsLGhfMjAwLHdfMjAw/v1/cHJvZmlsZV94eWxkdHQ=/template_primary"
                   alt="Yohannes Tekle - Full Stack Developer"
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -204,4 +204,3 @@ export default function Hero() {
     </section>
   );
 }
- 
