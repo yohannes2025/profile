@@ -321,3 +321,9 @@ cloudinary.config(
     api_secret = "your_api_secret",
     secure = True
 )
+
+# 1. Define Cloudinary as your default storage backend for media
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# 2. Base URL where the browser will look for media files
+MEDIA_URL = '/media/'
