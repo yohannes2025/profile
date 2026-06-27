@@ -18,7 +18,10 @@ export default function Projects() {
     queryFn: fetchProjects,
   });
 
-  const projectsArray = Array.isArray(projects) ? projects : [];
+  //  New code unpacking the Django REST Framework pagination 'results' wrapper
+  const projectsArray = Array.isArray(projects)
+    ? projects
+    : projects?.results || [];
 
   return (
     <section id="projects" className="py-24">

@@ -316,10 +316,10 @@ CKEDITOR_5_CONFIGS = {
 }
 
 cloudinary.config(
-    cloud_name = "your_cloud_name",
-    api_key = "your_api_key",
-    api_secret = "your_api_secret",
-    secure = True
+    cloud_name=config("CLOUDINARY_CLOUD_NAME"),
+    api_key=config("CLOUDINARY_API_KEY"),
+    api_secret=config("CLOUDINARY_API_SECRET"),
+    secure=True,
 )
 
 # 1. Define Cloudinary as your default storage backend for media

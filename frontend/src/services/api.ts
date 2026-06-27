@@ -23,7 +23,20 @@ api.interceptors.response.use(
 export const fetchProjects = async () => {
   try {
     const response = await api.get("/projects/");
-    return Array.isArray(response.data) ? response.data : [];
+    const data = response.data;
+
+    // DRF paginated response
+    if (data && typeof data === "object") {
+      if (Array.isArray(data.results)) {
+        return data.results;
+      }
+
+      if (Array.isArray(data)) {
+        return data;
+      }
+    }
+
+    return [];
   } catch (error) {
     console.error("Error fetching projects:", error);
     return [];

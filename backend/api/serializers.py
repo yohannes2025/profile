@@ -5,9 +5,16 @@ from .models import Project, Skill, Testimonial, Experience, Education, ContactM
 from blog.models import BlogPost, Category, Tag, Comment
 
 class ProjectSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = "__all__"
+
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url
+        return None
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
