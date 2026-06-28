@@ -105,6 +105,7 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
 
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # 👈 ADD THIS CRUCIAL LINE HERE
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -329,8 +330,15 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # 2. Base URL where the browser will look for media files
 MEDIA_URL = '/media/'
 
-# Add language configurations at the bottom of settings.py
+# ==============================================================================
+# INTERNATIONALIZATION
+# ==============================================================================
 LANGUAGE_CODE = 'en'
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True
+
+# Explicitly declare available translation options
 LANGUAGES = [
     ('en', 'English'),
     ('de', 'German'),

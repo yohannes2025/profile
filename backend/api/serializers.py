@@ -9,6 +9,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Project
+        # 💡 Reverting to "__all__" avoids typos or missing model fields
         fields = "__all__"
 
     def get_image(self, obj):
@@ -19,6 +20,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
         model = Skill
+        # 💡 Safely using "__all__" so 'level' configuration mismatch stops crashing
         fields = '__all__'
 
 class TestimonialSerializer(serializers.ModelSerializer):
