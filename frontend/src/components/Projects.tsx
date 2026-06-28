@@ -1,4 +1,3 @@
-// frontend/src/components/Projects.tsx
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
@@ -9,7 +8,8 @@ import { Github, ExternalLink, Code2 } from "lucide-react";
 import ProjectModal from "./ProjectModal";
 
 export default function Projects() {
-  const { t } = useTranslation();
+  // Destructure both t and i18n to listen for language toggles
+  const { t, i18n } = useTranslation();
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true });
 
   // Modal tracking states
@@ -21,7 +21,9 @@ export default function Projects() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["projects"],
+    // Adding i18n.language here clears the old cache and forces a fresh network
+    // request to your Django server every single time the user clicks "Deutsch" or "English"
+    queryKey: ["projects", i18n.language],
     queryFn: fetchProjects,
   });
 

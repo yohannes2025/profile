@@ -1,5 +1,6 @@
 // frontend/src/services/api.ts
 import axios from "axios";
+import i18n from "../i18n"; // Import your initialized i18n instance
 
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:8000/api";
@@ -10,6 +11,18 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
+
+// Automatically inject the active i18next language into every API request
+api.interceptors.request.use(
+  (config) => {
+    const currentLanguage = i18n.language || "en";
+    config.headers["Accept-Language"] = currentLanguage;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
 // Add response interceptor to handle errors
 api.interceptors.response.use(

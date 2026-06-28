@@ -70,6 +70,7 @@ CSRF_TRUSTED_ORIGINS = [
 # APPLICATIONS
 # ==============================================================================
 INSTALLED_APPS = [
+    'modeltranslation',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -327,3 +328,10 @@ DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # 2. Base URL where the browser will look for media files
 MEDIA_URL = '/media/'
+
+# Add language configurations at the bottom of settings.py
+LANGUAGE_CODE = 'en'
+LANGUAGES = [
+    ('en', 'English'),
+    ('de', 'German'),
+]
