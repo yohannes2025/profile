@@ -69,3 +69,7 @@ coverage/
 .pytest_cache/
 frontend/.env.local.save
 frontend/package.json.backup
+
+node_modules/
+dist/
+.vite/
