@@ -1,14 +1,21 @@
 // frontend/src/components/Projects.tsx
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useInView } from "react-intersection-observer";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { fetchProjects } from "../services/api";
 import { Github, ExternalLink, Code2 } from "lucide-react";
+import ProjectModal from "./ProjectModal";
 
 export default function Projects() {
   const { t } = useTranslation();
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: true });
+
+  // Modal tracking states
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState<any>(null);
+
   const {
     data: projects,
     isLoading,
@@ -18,7 +25,7 @@ export default function Projects() {
     queryFn: fetchProjects,
   });
 
-  //  New code unpacking the Django REST Framework pagination 'results' wrapper
+  // Unpacking the Django REST Framework pagination 'results' wrapper
   const projectsArray = Array.isArray(projects)
     ? projects
     : projects?.results || [];
@@ -143,6 +150,10 @@ export default function Projects() {
                       </a>
                     )}
                     <button
+                      onClick={() => {
+                        setSelectedProject(project);
+                        setIsModalOpen(true);
+                      }}
                       className="p-2 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-cyan-100 dark:hover:bg-cyan-900 transition-colors"
                       title={t("projects.details")}
                     >
@@ -155,6 +166,19 @@ export default function Projects() {
           </div>
         )}
       </div>
+
+      {/* Global Project Modal Anchor Point */}
+      {selectedProject && (
+        <ProjectModal
+          project={selectedProject}
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedProject(null);
+          }}
+          t={t}
+        />
+      )}
     </section>
   );
 }

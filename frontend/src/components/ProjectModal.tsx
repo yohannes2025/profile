@@ -120,7 +120,7 @@ export default function ProjectModal({
               {project.description}
             </p>
 
-            {/* Technologies - Using existing translation key */}
+            {/* Technologies */}
             {technologies.length > 0 && (
               <div className="mb-6">
                 <h4 className="font-semibold mb-3 text-slate-900 dark:text-white flex items-center gap-2">
