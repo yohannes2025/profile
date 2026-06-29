@@ -97,7 +97,57 @@ A modern, full-stack portfolio website built with React, Django, and PostgreSQL.
 
 ## 📁 Project Structure
 
-portfolio/ ├── backend/ # Django **REST** **API** │ ├── api/ # Main **API** app (projects, skills, contact) │ ├── blog/ # Blog app with **CMS** │ ├── users/ # User management & authentication │ ├── config/ # Django configuration │ │ ├── settings.py # Main settings │ │ ├── urls.py # Root **URL** configuration │ │ └── celery.py # Celery configuration │ ├── requirements.txt # Python dependencies │ ├── Dockerfile # Docker containerization │ └── docker-compose.yml # Docker compose configuration │ ├── frontend/ # React + TypeScript │ ├── src/ │ │ ├── components/ # All React components │ │ │ ├── Hero.tsx # Homepage hero section │ │ │ ├── About.tsx # About section with CV download │ │ │ ├── Skills.tsx # Skills with progress bars │ │ │ ├── Projects.tsx # Projects showcase │ │ │ ├── Testimonials.tsx │ │ │ ├── Blog.tsx # Blog section │ │ │ ├── Contact.tsx # Contact form │ │ │ ├── Navbar.tsx # Navigation with theme & language │ │ │ └── Footer.tsx │ │ ├── locales/ # Translations (EN/DE) │ │ │ ├── en/ # English translations │ │ │ └── de/ # German translations │ │ ├── hooks/ # Custom React hooks │ │ ├── services/ # **API** service layer │ │ ├── contexts/ # React contexts │ │ ├── App.tsx # Main app component │ │ └── main.tsx # Entry point │ ├── public/ │ │ ├── images/ # Static images │ │ ├── cv/ # CV files (EN/DE) │ │ └── favicon.svg # Favicon │ ├── package.json # Node dependencies │ ├── vite.config.ts # Vite configuration │ ├── tailwind.config.js # Tailwind **CSS** configuration │ └── Dockerfile # Docker containerization │ ├── .github/ │ └── workflows/ # GitHub Actions CI/CD │ └── deploy.yml │ ├── .env.example # Environment variables template ├── .gitignore # Git ignore file └── **README**.md # This file
+```text
+portfolio/
+├── backend/                          # Django REST API
+│   ├── api/                          # Main API app (projects, skills, contact)
+│   ├── blog/                         # Blog app with CMS
+│   ├── users/                        # User management & authentication
+│   ├── config/                       # Django configuration
+│   │   ├── settings.py               # Main settings
+│   │   ├── urls.py                   # Root URL configuration
+│   │   └── celery.py                 # Celery configuration
+│   ├── requirements.txt              # Python dependencies
+│   ├── Dockerfile                    # Docker containerization
+│   └── docker-compose.yml            # Docker Compose configuration
+│
+├── frontend/                         # React + TypeScript
+│   ├── src/
+│   │   ├── components/               # React components
+│   │   │   ├── Hero.tsx
+│   │   │   ├── About.tsx
+│   │   │   ├── Skills.tsx
+│   │   │   ├── Projects.tsx
+│   │   │   ├── Testimonials.tsx
+│   │   │   ├── Blog.tsx
+│   │   │   ├── Contact.tsx
+│   │   │   ├── Navbar.tsx
+│   │   │   └── Footer.tsx
+│   │   ├── locales/
+│   │   │   ├── en/
+│   │   │   └── de/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   ├── contexts/
+│   │   ├── App.tsx
+│   │   └── main.tsx
+│   ├── public/
+│   │   ├── images/
+│   │   ├── cv/
+│   │   └── favicon.svg
+│   ├── package.json
+│   ├── vite.config.ts
+│   ├── tailwind.config.js
+│   └── Dockerfile
+│
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
+│
+├── .env.example                      # Environment variables template
+├── .gitignore
+└── README.md
+```
 
 ## 🚀 Installation
 
