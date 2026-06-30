@@ -75,3 +75,5 @@ dist/
 .vite/
 
 **/node_modules/
+.vercel
+.env*
