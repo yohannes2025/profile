@@ -73,3 +73,5 @@ frontend/package.json.backup
 node_modules/
 dist/
 .vite/
+
+**/node_modules/
