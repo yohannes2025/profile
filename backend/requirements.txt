@@ -45,7 +45,7 @@ django-filter==23.5
 django-jazzmin==2.6.0
 django-js-asset==3.1.2
 django-model-utils==4.3.1
-django-modeltranslation==0.20.3
+django-modeltranslation==0.19.0
 django-prometheus==2.3.1
 django-ratelimit==4.1.0
 django-redis==5.4.0
