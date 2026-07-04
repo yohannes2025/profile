@@ -164,14 +164,26 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
+from whitenoise.storage import CompressedStaticFilesStorage
+
+class SafeCompressedStaticFilesStorage(CompressedStaticFilesStorage):
+    def post_process(self, *args, **kwargs):
+        # Filter out the ghost files that modeltranslation registers but doesn't create
+        filtered_args = {
+            k: v for k, v in args[0].items() 
+            if not k.startswith('modeltranslation/')
+        }
+        args = (filtered_args,) + args[1:]
+        return super().post_process(*args, **kwargs)
+
 # ==============================================================================
 # STATIC / MEDIA
 # ==============================================================================
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-# STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'config.settings.SafeCompressedStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
