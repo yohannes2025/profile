@@ -173,12 +173,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 STORAGES = {
     "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
+
+
 # STATICFILES_STORAGE = 'config.settings.SafeCompressedStaticFilesStorage'
 
 MEDIA_URL = '/media/'
@@ -333,19 +335,10 @@ cloudinary.config(
     secure=True,
 )
 
-# 1. Define Cloudinary as your default storage backend for media
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # 2. Base URL where the browser will look for media files
 MEDIA_URL = '/media/'
 
-# ==============================================================================
-# INTERNATIONALIZATION
-# ==============================================================================
-LANGUAGE_CODE = 'en'
-TIME_ZONE = 'UTC'
-USE_I18N = True
-USE_TZ = True
 
 # Explicitly declare available translation options
 LANGUAGES = [
