@@ -3,7 +3,6 @@
 # CORE IMPORTS
 # ==============================================================================
 import os
-from whitenoise.storage import CompressedStaticFilesStorage
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
@@ -71,7 +70,7 @@ CSRF_TRUSTED_ORIGINS = [
 # APPLICATIONS
 # ==============================================================================
 INSTALLED_APPS = [
-    'modeltranslation',
+    #'modeltranslation',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -164,28 +163,7 @@ LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
-
-class SafeCompressedStaticFilesStorage(CompressedStaticFilesStorage):
-    def post_process(self, *args, **kwargs):
-        """
-        Safely filter out any files that do not physically exist on disk
-        before passing them to WhiteNoise's compression processor.
-        """
-        files = args[0]
-        accessible_files = {}
-
-        for path, info in files.items():
-            # Get the absolute local path to where the file should be
-            full_path = os.path.join(self.location, path)
-            if os.path.exists(full_path):
-                accessible_files[path] = info
-            else:
-                # Log or silently bypass the phantom files from third-party apps
-                print(f"WhiteNoise Storage: Skipping missing file -> {path}")
-
-        # Replace the original file dictionary with our verified accessible list
-        new_args = (accessible_files,) + args[1:]
-        return super().post_process(*new_args, **kwargs)
+    
 
 # ==============================================================================
 # STATIC / MEDIA
@@ -193,7 +171,14 @@ class SafeCompressedStaticFilesStorage(CompressedStaticFilesStorage):
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 # STATICFILES_STORAGE = 'config.settings.SafeCompressedStaticFilesStorage'
 
 MEDIA_URL = '/media/'
