@@ -3,6 +3,7 @@
 # CORE IMPORTS
 # ==============================================================================
 import os
+from whitenoise.storage import CompressedStaticFilesStorage
 from pathlib import Path
 from decouple import config
 from datetime import timedelta
@@ -164,9 +165,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-from whitenoise.storage import CompressedStaticFilesStorage
-import os
-
 class SafeCompressedStaticFilesStorage(CompressedStaticFilesStorage):
     def post_process(self, *args, **kwargs):
         """
@@ -195,8 +193,8 @@ class SafeCompressedStaticFilesStorage(CompressedStaticFilesStorage):
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-# STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
-STATICFILES_STORAGE = 'config.settings.SafeCompressedStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# STATICFILES_STORAGE = 'config.settings.SafeCompressedStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
