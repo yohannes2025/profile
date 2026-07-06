@@ -170,14 +170,18 @@ USE_TZ = True
 # ==============================================================================
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')] # Standard approach since the folder exists
+
+# Keep the array empty to resolve the staticfiles.W004 warning 
+# if you do not have custom project-level static files yet
+STATICFILES_DIRS = [] 
 
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        # 🚀 Switch to the fallback standard Django backend engine
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
 
