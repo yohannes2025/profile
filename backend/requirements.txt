@@ -4,6 +4,9 @@ djangorestframework==3.14.0
 djangorestframework-simplejwt==5.3.0
 django-cors-headers==4.3.1
 
+# Admin Theme UI
+django-jazzmin==3.0.5
+
 # Database & Environment Management
 psycopg2-binary==2.9.9
 dj-database-url==3.1.2
