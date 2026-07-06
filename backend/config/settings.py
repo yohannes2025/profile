@@ -8,6 +8,7 @@ from decouple import config
 from datetime import timedelta
 from dotenv import load_dotenv
 import dj_database_url
+from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 import cloudinary
 import cloudinary.uploader
@@ -172,18 +173,20 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [] 
 
+# Create a custom storage class that forcefully ignores missing files/source maps
+
+class ForgivingWhiteNoiseStorage(CompressedManifestStaticFilesStorage):
+    manifest_strict = False
+
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        # 🚀 Use our custom class that won't crash on missing library assets
+        "BACKEND": "config.settings.ForgivingWhiteNoiseStorage",
     },
 }
-
-# 🚀 ADD THIS LINE RIGHT HERE
-# This forces WhiteNoise to skip crashing when third-party libraries have missing source maps
-WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
