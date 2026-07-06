@@ -169,10 +169,7 @@ USE_TZ = True
 # STATIC / MEDIA
 # ==============================================================================
 STATIC_URL = '/static/'
-
-# Use absolute paths explicitly to ensure Render finds it across all environments
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-
 STATICFILES_DIRS = [] 
 
 STORAGES = {
@@ -180,17 +177,16 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        # 🚀 Let WhiteNoise handle your production static files assets 
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
-# This prevents WhiteNoise from crashing the build if an external app file asset is missing
+# 🚀 ADD THIS LINE RIGHT HERE
+# This forces WhiteNoise to skip crashing when third-party libraries have missing source maps
 WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ==============================================================================
