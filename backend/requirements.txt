@@ -27,7 +27,8 @@ pillow==12.3.0
 celery==5.3.4
 redis==5.0.1
 
-# Utilities
+# Compatibility & Utilities
+setuptools==69.5.1
 asgiref==3.11.1
 sqlparse==0.5.5
 pytz==2026.2
