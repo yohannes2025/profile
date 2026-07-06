@@ -172,18 +172,22 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [] 
-
-# Create a custom storage class that forcefully ignores missing files/source maps
-
 class ForgivingWhiteNoiseStorage(CompressedManifestStaticFilesStorage):
     manifest_strict = False
+
+    def clean_name(self, name):
+        """ Forcefully intercept missing asset errors and bypass them cleanly """
+        try:
+            return super().clean_name(name)
+        except ValueError:
+            # If a third-party map file is missing, return it as-is without crashing the build
+            return name
 
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        # 🚀 Use our custom class that won't crash on missing library assets
         "BACKEND": "config.settings.ForgivingWhiteNoiseStorage",
     },
 }
