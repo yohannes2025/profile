@@ -169,10 +169,10 @@ USE_TZ = True
 # STATIC / MEDIA
 # ==============================================================================
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-# Keep the array empty to resolve the staticfiles.W004 warning 
-# if you do not have custom project-level static files yet
+# Use absolute paths explicitly to ensure Render finds it across all environments
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 STATICFILES_DIRS = [] 
 
 STORAGES = {
@@ -180,11 +180,12 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        # 🚀 Switch to the fallback standard Django backend engine
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        # 🚀 Let WhiteNoise handle your production static files assets 
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
+# This prevents WhiteNoise from crashing the build if an external app file asset is missing
 WHITENOISE_MANIFEST_STRICT = False
 
 MEDIA_URL = '/media/'
