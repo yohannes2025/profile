@@ -175,12 +175,12 @@ STATICFILES_DIRS = []
 class ForgivingWhiteNoiseStorage(CompressedManifestStaticFilesStorage):
     manifest_strict = False
 
-    def clean_name(self, name):
-        """ Forcefully intercept missing asset errors and bypass them cleanly """
+    def stored_name(self, name):
+        """ Forcefully catch missing map references during WhiteNoise's post-processing loop """
         try:
-            return super().clean_name(name)
+            return super().stored_name(name)
         except ValueError:
-            # If a third-party map file is missing, return it as-is without crashing the build
+            # If the referenced map/asset is missing, return the name as-is to keep the build moving
             return name
 
 STORAGES = {
