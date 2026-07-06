@@ -8,8 +8,9 @@ from decouple import config
 from datetime import timedelta
 from dotenv import load_dotenv
 import dj_database_url
-# Switch to CompressedStaticFilesStorage to bypass manifest map validation entirely
-from whitenoise.storage import CompressedStaticFilesStorage
+
+# Switch to standard StaticFilesStorage to skip aggressive compression scanning
+from whitenoise.storage import StaticFilesStorage
 
 import cloudinary
 import cloudinary.uploader
@@ -173,7 +174,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [] 
-class ForgivingWhiteNoiseStorage(CompressedStaticFilesStorage):
+class ForgivingWhiteNoiseStorage(StaticFilesStorage):
     pass
 
 STORAGES = {
