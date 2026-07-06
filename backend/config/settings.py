@@ -8,7 +8,8 @@ from decouple import config
 from datetime import timedelta
 from dotenv import load_dotenv
 import dj_database_url
-from whitenoise.storage import CompressedManifestStaticFilesStorage
+# Switch to CompressedStaticFilesStorage to bypass manifest map validation entirely
+from whitenoise.storage import CompressedStaticFilesStorage
 
 import cloudinary
 import cloudinary.uploader
@@ -172,16 +173,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [] 
-class ForgivingWhiteNoiseStorage(CompressedManifestStaticFilesStorage):
-    manifest_strict = False
-
-    def stored_name(self, name):
-        """ Forcefully catch missing map references during WhiteNoise's post-processing loop """
-        try:
-            return super().stored_name(name)
-        except ValueError:
-            # If the referenced map/asset is missing, return the name as-is to keep the build moving
-            return name
+class ForgivingWhiteNoiseStorage(CompressedStaticFilesStorage):
+    pass
 
 STORAGES = {
     "default": {
