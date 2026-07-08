@@ -10,7 +10,7 @@ python manage.py collectstatic --noinput
 echo "Applying migrations..."
 python manage.py migrate
 
-echo "Creating/updating superuser..."
+echo "Creating admin user..."
 python create_admin.py
 
 echo "Build completed successfully."
