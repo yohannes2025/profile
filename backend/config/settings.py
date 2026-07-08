@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 import dj_database_url
 
 # Switch to standard StaticFilesStorage to skip aggressive compression scanning
-from whitenoise.storage import StaticFilesStorage
+from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 import cloudinary
 import cloudinary.uploader
@@ -75,6 +75,8 @@ CSRF_TRUSTED_ORIGINS = [
 # ==============================================================================
 INSTALLED_APPS = [
     #'modeltranslation',
+    'jazzmin',
+    "django.contrib.admin",
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -85,9 +87,6 @@ INSTALLED_APPS = [
     
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
-
-    'jazzmin',
-    'django.contrib.admin',
 
     'rest_framework',
     'rest_framework_simplejwt',
@@ -173,18 +172,43 @@ USE_TZ = True
 # ==============================================================================
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [] 
-class ForgivingWhiteNoiseStorage(StaticFilesStorage):
-    pass
+STATICFILES_DIRS = []
 
 STORAGES = {
     "default": {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
-        "BACKEND": "config.settings.ForgivingWhiteNoiseStorage",
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
+
+WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
+    "css",
+    "js",
+    "woff",
+    "woff2",
+    "ttf",
+    "map",
+)
+
+STATICFILES_FINDERS = [
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+]
+
+#WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
+#   "jpg",
+#   "jpeg",
+#   "png",
+#   "gif",
+#   "webp",
+#   "woff",
+#   "woff2",
+#   "ttf",
+#   "eot",
+#   "svg",
+#)
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
