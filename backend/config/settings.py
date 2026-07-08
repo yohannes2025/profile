@@ -31,7 +31,22 @@ SECRET_KEY = config(
     default='django-insecure-your-secret-key-here-change-in-production'
 )
 
-DEBUG = config('DEBUG', default=True, cast=bool)
+#DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
+
+# ==============================================================================
+# SECURITY SETTINGS (Production)
+# ==============================================================================
+
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 # ==============================================================================
 # ALLOWED HOSTS (RENDER + LOCAL + CUSTOM DOMAIN)
@@ -180,6 +195,7 @@ STORAGES = {
     },
     "staticfiles": {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        #"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
