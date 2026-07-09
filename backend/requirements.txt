@@ -1,3 +1,5 @@
+
+# Backend Requirements for Django Project
 # Core Web Framework & API
 Django==4.2.7
 djangorestframework==3.14.0
@@ -36,3 +38,7 @@ sqlparse==0.5.5
 pytz==2026.2
 PyJWT==2.8.0
 cryptography==49.0.0
+
+# Static files & Media Storage
+whitenoise==6.6.0
+django-cloudinary-storage==0.3.0

@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 import dj_database_url
 
 # Switch to standard StaticFilesStorage to skip aggressive compression scanning
-from whitenoise.storage import CompressedManifestStaticFilesStorage
+# from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 import cloudinary
 import cloudinary.uploader
@@ -48,21 +48,25 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
 
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    
+    CSRF_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_HTTPONLY = True
+    SECURE_REFERRER_POLICY = "same-origin"
+
 # ==============================================================================
 # ALLOWED HOSTS (RENDER + LOCAL + CUSTOM DOMAIN)
 # ==============================================================================
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
 
-ALLOWED_HOSTS = os.environ.get(
-    'ALLOWED_HOSTS',
-    'localhost,127.0.0.1'
-).split(',')
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+]
 
 if RENDER_EXTERNAL_HOSTNAME:
     ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
-    ALLOWED_HOSTS.append('.onrender.com')
 
-# Your production domains
 ALLOWED_HOSTS += [
     "yohannestekle.com",
     "www.yohannestekle.com",
@@ -82,7 +86,7 @@ CSRF_TRUSTED_ORIGINS = [
 
     "https://yohannestekle.com",
     "https://www.yohannestekle.com",
-    "https://api.yohannestekle.com",
+    "https://yohannestekle.com",
 ]
 
 # ==============================================================================
@@ -156,9 +160,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # DATABASE (SQLite for now)
 # ==============================================================================
 DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600
+    "default": dj_database_url.config(
+        conn_max_age=600,
+        ssl_require=not DEBUG
     )
 }
 
@@ -186,7 +190,7 @@ USE_TZ = True
 # STATIC / MEDIA
 # ==============================================================================
 STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 STATICFILES_DIRS = []
 
 STORAGES = {
@@ -194,24 +198,25 @@ STORAGES = {
         "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
     },
     "staticfiles": {
+        #"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
         #"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
-WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
-    "css",
-    "js",
-    "woff",
-    "woff2",
-    "ttf",
-    "map",
-)
+#WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
+#    "css",
+#    "js",
+#    "woff",
+#    "woff2",
+#    "ttf",
+#    "map",
+#)
 
-STATICFILES_FINDERS = [
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-]
+#STATICFILES_FINDERS = [
+#    "django.contrib.staticfiles.finders.FileSystemFinder",
+#    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+#]
 
 #WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
 #   "jpg",
@@ -371,15 +376,11 @@ CKEDITOR_5_CONFIGS = {
 }
 
 cloudinary.config(
-    cloud_name=config("CLOUDINARY_CLOUD_NAME"),
-    api_key=config("CLOUDINARY_API_KEY"),
-    api_secret=config("CLOUDINARY_API_SECRET"),
+    cloud_name=config("CLOUDINARY_CLOUD_NAME", default=""),
+    api_key=config("CLOUDINARY_API_KEY", default=""),
+    api_secret=config("CLOUDINARY_API_SECRET", default=""),
     secure=True,
 )
-
-
-# 2. Base URL where the browser will look for media files
-MEDIA_URL = '/media/'
 
 
 # Explicitly declare available translation options
