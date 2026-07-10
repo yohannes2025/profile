@@ -111,6 +111,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'drf_spectacular',
+    'drf_spectacular_sidecar',
 
     'api',
     'blog',
@@ -347,7 +348,8 @@ SPECTACULAR_SETTINGS = {
     'TITLE': 'Your Portfolio API',
     'DESCRIPTION': 'API documentation for profile, blog, and project features.',
     'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
+    'SWAGGER_UI_DIST': 'SIDECAR',
+    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
 }
 
 # ==============================================================================
