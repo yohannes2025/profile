@@ -86,13 +86,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CommentCreateRequest'
+              $ref: '#/components/schemas/CommentCreate'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/CommentCreateRequest'
+              $ref: '#/components/schemas/CommentCreate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/CommentCreateRequest'
+              $ref: '#/components/schemas/CommentCreate'
         required: true
       security:
       - jwtAuth: []
@@ -156,13 +156,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+              $ref: '#/components/schemas/BlogPostCreateUpdate'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+              $ref: '#/components/schemas/BlogPostCreateUpdate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+              $ref: '#/components/schemas/BlogPostCreateUpdate'
         required: true
       security:
       - jwtAuth: []
@@ -187,13 +187,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedBlogPostCreateUpdateRequest'
+              $ref: '#/components/schemas/PatchedBlogPostCreateUpdate'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedBlogPostCreateUpdateRequest'
+              $ref: '#/components/schemas/PatchedBlogPostCreateUpdate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedBlogPostCreateUpdateRequest'
+              $ref: '#/components/schemas/PatchedBlogPostCreateUpdate'
       security:
       - jwtAuth: []
       responses:
@@ -296,13 +296,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CommentRequest'
+              $ref: '#/components/schemas/Comment'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/CommentRequest'
+              $ref: '#/components/schemas/Comment'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/CommentRequest'
+              $ref: '#/components/schemas/Comment'
         required: true
       security:
       - jwtAuth: []
@@ -327,13 +327,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedCommentRequest'
+              $ref: '#/components/schemas/PatchedComment'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedCommentRequest'
+              $ref: '#/components/schemas/PatchedComment'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedCommentRequest'
+              $ref: '#/components/schemas/PatchedComment'
       security:
       - jwtAuth: []
       responses:
@@ -352,13 +352,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+              $ref: '#/components/schemas/BlogPostCreateUpdate'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+              $ref: '#/components/schemas/BlogPostCreateUpdate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/BlogPostCreateUpdateRequest'
+              $ref: '#/components/schemas/BlogPostCreateUpdate'
         required: true
       security:
       - jwtAuth: []
@@ -483,20 +483,19 @@ paths:
   /api/contact/:
     post:
       operationId: api_contact_create
-      description: Create a new contact message.
       tags:
       - api
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ContactMessageRequest'
+              $ref: '#/components/schemas/ContactMessage'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ContactMessageRequest'
+              $ref: '#/components/schemas/ContactMessage'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ContactMessageRequest'
+              $ref: '#/components/schemas/ContactMessage'
         required: true
       security:
       - jwtAuth: []
@@ -511,22 +510,16 @@ paths:
   /api/dashboard/stats/:
     get:
       operationId: api_dashboard_stats_retrieve
-      description: Get dashboard statistics for admin
       tags:
       - api
       security:
       - jwtAuth: []
       responses:
         '200':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Skill'
-          description: ''
+          description: No response body
   /api/education/:
     get:
       operationId: api_education_list
-      description: List all education
       parameters:
       - name: page
         required: false
@@ -549,7 +542,6 @@ paths:
   /api/experiences/:
     get:
       operationId: api_experiences_list
-      description: List all work experiences
       parameters:
       - name: page
         required: false
@@ -572,7 +564,6 @@ paths:
   /api/projects/:
     get:
       operationId: api_projects_list
-      description: List all featured projects
       parameters:
       - name: page
         required: false
@@ -594,9 +585,8 @@ paths:
           description: ''
   /api/recent-posts/:
     get:
-      operationId: api_recent_posts_list
-      description: Fetches recent posts layout array data structures targeting public
-        index pages.
+      operationId: api_recent_posts_retrieve
+      description: Return latest 3 blog posts
       tags:
       - api
       security:
@@ -604,17 +594,10 @@ paths:
       - {}
       responses:
         '200':
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/BlogPostList'
-          description: ''
+          description: No response body
   /api/skills/:
     get:
       operationId: api_skills_list
-      description: List all skills
       parameters:
       - name: page
         required: false
@@ -634,10 +617,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/PaginatedSkillList'
           description: ''
+  /api/test-post/:
+    post:
+      operationId: api_test_post_create
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
   /api/testimonials/:
     get:
       operationId: api_testimonials_list
-      description: List all featured testimonials
       parameters:
       - name: page
         required: false
@@ -690,13 +683,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChangePasswordRequest'
+              $ref: '#/components/schemas/ChangePassword'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ChangePasswordRequest'
+              $ref: '#/components/schemas/ChangePassword'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ChangePasswordRequest'
+              $ref: '#/components/schemas/ChangePassword'
         required: true
       security:
       - jwtAuth: []
@@ -784,13 +777,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ForgotPasswordRequest'
+              $ref: '#/components/schemas/ForgotPassword'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ForgotPasswordRequest'
+              $ref: '#/components/schemas/ForgotPassword'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ForgotPasswordRequest'
+              $ref: '#/components/schemas/ForgotPassword'
         required: true
       security:
       - jwtAuth: []
@@ -813,13 +806,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserLoginRequest'
+              $ref: '#/components/schemas/UserLogin'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/UserLoginRequest'
+              $ref: '#/components/schemas/UserLogin'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UserLoginRequest'
+              $ref: '#/components/schemas/UserLogin'
         required: true
       security:
       - jwtAuth: []
@@ -872,13 +865,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserUpdateRequest'
+              $ref: '#/components/schemas/UserUpdate'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/UserUpdateRequest'
+              $ref: '#/components/schemas/UserUpdate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UserUpdateRequest'
+              $ref: '#/components/schemas/UserUpdate'
       security:
       - jwtAuth: []
       responses:
@@ -897,13 +890,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+              $ref: '#/components/schemas/PatchedUserUpdate'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+              $ref: '#/components/schemas/PatchedUserUpdate'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/PatchedUserUpdateRequest'
+              $ref: '#/components/schemas/PatchedUserUpdate'
       security:
       - jwtAuth: []
       responses:
@@ -945,13 +938,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRegistrationRequest'
+              $ref: '#/components/schemas/UserRegistration'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/UserRegistrationRequest'
+              $ref: '#/components/schemas/UserRegistration'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/UserRegistrationRequest'
+              $ref: '#/components/schemas/UserRegistration'
         required: true
       security:
       - jwtAuth: []
@@ -990,13 +983,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResetPasswordRequest'
+              $ref: '#/components/schemas/ResetPassword'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ResetPasswordRequest'
+              $ref: '#/components/schemas/ResetPassword'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ResetPasswordRequest'
+              $ref: '#/components/schemas/ResetPassword'
         required: true
       security:
       - jwtAuth: []
@@ -1083,13 +1076,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AvatarUploadRequest'
+              $ref: '#/components/schemas/AvatarUpload'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/AvatarUploadRequest'
+              $ref: '#/components/schemas/AvatarUpload'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/AvatarUploadRequest'
+              $ref: '#/components/schemas/AvatarUpload'
         required: true
       security:
       - jwtAuth: []
@@ -1112,13 +1105,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResumeUploadRequest'
+              $ref: '#/components/schemas/ResumeUpload'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/ResumeUploadRequest'
+              $ref: '#/components/schemas/ResumeUpload'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ResumeUploadRequest'
+              $ref: '#/components/schemas/ResumeUpload'
         required: true
       security:
       - jwtAuth: []
@@ -1141,13 +1134,13 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EmailVerificationRequest'
+              $ref: '#/components/schemas/EmailVerification'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/EmailVerificationRequest'
+              $ref: '#/components/schemas/EmailVerification'
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/EmailVerificationRequest'
+              $ref: '#/components/schemas/EmailVerification'
         required: true
       security:
       - jwtAuth: []
@@ -1163,7 +1156,6 @@ paths:
   /healthz:
     get:
       operationId: healthz_retrieve
-      description: Simple health checking verification pipeline target.
       tags:
       - healthz
       security:
@@ -1171,12 +1163,7 @@ paths:
       - {}
       responses:
         '200':
-          content:
-            application/json:
-              schema:
-                type: object
-                additionalProperties: {}
-          description: ''
+          description: No response body
 components:
   schemas:
     ActivityTypeEnum:
@@ -1292,9 +1279,8 @@ components:
           maxLength: 200
         years_of_experience:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
         phone_number:
           type: string
           nullable: true
@@ -1340,12 +1326,12 @@ components:
       - profile_completion
       - profile_views
       - username
-    AvatarUploadRequest:
+    AvatarUpload:
       type: object
       properties:
         avatar:
           type: string
-          format: binary
+          format: uri
       required:
       - avatar
     BlogArchive:
@@ -1422,44 +1408,6 @@ components:
       - excerpt
       - slug
       - title
-    BlogPostCreateUpdateRequest:
-      type: object
-      properties:
-        title:
-          type: string
-          minLength: 1
-          maxLength: 255
-        slug:
-          type: string
-          minLength: 1
-          maxLength: 50
-          pattern: ^[-a-zA-Z0-9_]+$
-        excerpt:
-          type: string
-          minLength: 1
-        content:
-          type: string
-          minLength: 1
-        featured_image:
-          type: string
-          minLength: 1
-          nullable: true
-          title: Image
-        category:
-          type: integer
-          nullable: true
-        tags:
-          type: array
-          items:
-            type: string
-            minLength: 1
-        published:
-          type: boolean
-      required:
-      - content
-      - excerpt
-      - slug
-      - title
     BlogPostDetail:
       type: object
       properties:
@@ -1496,9 +1444,8 @@ components:
           readOnly: true
         views:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
         published:
           type: boolean
         created_at:
@@ -1573,9 +1520,8 @@ components:
           readOnly: true
         views:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
         published:
           type: boolean
         category_name:
@@ -1652,18 +1598,15 @@ components:
         * `database` - Database
         * `devops` - DevOps
         * `tools` - Tools
-    ChangePasswordRequest:
+    ChangePassword:
       type: object
       properties:
         old_password:
           type: string
-          minLength: 1
         new_password:
           type: string
-          minLength: 1
         confirm_password:
           type: string
-          minLength: 1
       required:
       - confirm_password
       - new_password
@@ -1717,44 +1660,6 @@ components:
       - comment
       - email
       - name
-    CommentCreateRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-        email:
-          type: string
-          format: email
-          minLength: 1
-          maxLength: 254
-        comment:
-          type: string
-          minLength: 1
-      required:
-      - comment
-      - email
-      - name
-    CommentRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 100
-        email:
-          type: string
-          format: email
-          minLength: 1
-          maxLength: 254
-        comment:
-          type: string
-          minLength: 1
-      required:
-      - comment
-      - email
-      - name
     ContactMessage:
       type: object
       properties:
@@ -1770,30 +1675,6 @@ components:
           maxLength: 200
         message:
           type: string
-      required:
-      - email
-      - message
-      - name
-      - subject
-    ContactMessageRequest:
-      type: object
-      properties:
-        name:
-          type: string
-          minLength: 1
-          maxLength: 200
-        email:
-          type: string
-          format: email
-          minLength: 1
-          maxLength: 254
-        subject:
-          type: string
-          minLength: 1
-          maxLength: 200
-        message:
-          type: string
-          minLength: 1
       required:
       - email
       - message
@@ -1840,21 +1721,18 @@ components:
           maxLength: 200
         start_year:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
         end_year:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
         description:
           type: string
         order:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
       required:
       - degree
       - end_year
@@ -1862,7 +1740,7 @@ components:
       - institution
       - location
       - start_year
-    EmailVerificationRequest:
+    EmailVerification:
       type: object
       properties:
         token:
@@ -1899,29 +1777,24 @@ components:
         technologies: {}
         order:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
       required:
       - company
       - description
       - id
       - start_date
       - title
-    ForgotPasswordRequest:
+    ForgotPassword:
       type: object
       properties:
         email:
           type: string
           format: email
-          minLength: 1
       required:
       - email
     PaginatedBlogPostListList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -1942,9 +1815,6 @@ components:
             $ref: '#/components/schemas/BlogPostList'
     PaginatedCategoryList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -1965,9 +1835,6 @@ components:
             $ref: '#/components/schemas/Category'
     PaginatedCommentList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -1988,9 +1855,6 @@ components:
             $ref: '#/components/schemas/Comment'
     PaginatedEducationList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -2011,9 +1875,6 @@ components:
             $ref: '#/components/schemas/Education'
     PaginatedExperienceList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -2034,9 +1895,6 @@ components:
             $ref: '#/components/schemas/Experience'
     PaginatedProjectList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -2057,9 +1915,6 @@ components:
             $ref: '#/components/schemas/Project'
     PaginatedSkillList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -2080,9 +1935,6 @@ components:
             $ref: '#/components/schemas/Skill'
     PaginatedTagList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -2103,9 +1955,6 @@ components:
             $ref: '#/components/schemas/Tag'
     PaginatedTestimonialList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -2126,9 +1975,6 @@ components:
             $ref: '#/components/schemas/Testimonial'
     PaginatedUserActivityLogList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -2149,9 +1995,6 @@ components:
             $ref: '#/components/schemas/UserActivityLog'
     PaginatedUserSessionList:
       type: object
-      required:
-      - count
-      - results
       properties:
         count:
           type: integer
@@ -2170,27 +2013,22 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserSession'
-    PatchedBlogPostCreateUpdateRequest:
+    PatchedBlogPostCreateUpdate:
       type: object
       properties:
         title:
           type: string
-          minLength: 1
           maxLength: 255
         slug:
           type: string
-          minLength: 1
           maxLength: 50
           pattern: ^[-a-zA-Z0-9_]+$
         excerpt:
           type: string
-          minLength: 1
         content:
           type: string
-          minLength: 1
         featured_image:
           type: string
-          minLength: 1
           nullable: true
           title: Image
         category:
@@ -2200,25 +2038,34 @@ components:
           type: array
           items:
             type: string
-            minLength: 1
         published:
           type: boolean
-    PatchedCommentRequest:
+    PatchedComment:
       type: object
       properties:
+        id:
+          type: integer
+          readOnly: true
         name:
           type: string
-          minLength: 1
           maxLength: 100
         email:
           type: string
           format: email
-          minLength: 1
           maxLength: 254
         comment:
           type: string
-          minLength: 1
-    PatchedUserUpdateRequest:
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        approved:
+          type: boolean
+          readOnly: true
+        formatted_date:
+          type: string
+          readOnly: true
+    PatchedUserUpdate:
       type: object
       properties:
         first_name:
@@ -2289,13 +2136,17 @@ components:
           type: boolean
         language:
           type: string
-          minLength: 1
           maxLength: 10
     Project:
       type: object
       properties:
         id:
           type: integer
+          readOnly: true
+        image:
+          type: string
+          format: uri
+          nullable: true
           readOnly: true
         title:
           type: string
@@ -2307,8 +2158,6 @@ components:
         description:
           type: string
         content:
-          type: string
-        image:
           type: string
         github_link:
           type: string
@@ -2323,9 +2172,8 @@ components:
           type: boolean
         order:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
         created_at:
           type: string
           format: date-time
@@ -2343,7 +2191,7 @@ components:
       - slug
       - title
       - updated_at
-    ResetPasswordRequest:
+    ResetPassword:
       type: object
       properties:
         token:
@@ -2351,20 +2199,18 @@ components:
           format: uuid
         new_password:
           type: string
-          minLength: 1
         confirm_password:
           type: string
-          minLength: 1
       required:
       - confirm_password
       - new_password
       - token
-    ResumeUploadRequest:
+    ResumeUpload:
       type: object
       properties:
         resume:
           type: string
-          format: binary
+          format: uri
       required:
       - resume
     Skill:
@@ -2380,18 +2226,16 @@ components:
           $ref: '#/components/schemas/CategoryEnum'
         proficiency:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
           description: Percentage 0-100
         icon:
           type: string
           maxLength: 50
         order:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
       required:
       - category
       - id
@@ -2439,9 +2283,8 @@ components:
           type: string
         rating:
           type: integer
-          maximum: 9223372036854775807
-          minimum: -9223372036854775808
-          format: int64
+          maximum: 2147483647
+          minimum: -2147483648
         featured:
           type: boolean
         created_at:
@@ -2489,16 +2332,14 @@ components:
       - created_at
       - formatted_time
       - id
-    UserLoginRequest:
+    UserLogin:
       type: object
       properties:
         username:
           type: string
-          minLength: 1
         password:
           type: string
           writeOnly: true
-          minLength: 1
       required:
       - password
       - username
@@ -2522,37 +2363,12 @@ components:
         last_name:
           type: string
           maxLength: 150
-      required:
-      - username
-    UserRegistrationRequest:
-      type: object
-      properties:
-        username:
-          type: string
-          minLength: 1
-          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
-            only.
-          pattern: ^[\w.@+-]+$
-          maxLength: 150
-        email:
-          type: string
-          format: email
-          title: Email address
-          maxLength: 254
-        first_name:
-          type: string
-          maxLength: 150
-        last_name:
-          type: string
-          maxLength: 150
         password:
           type: string
           writeOnly: true
-          minLength: 1
         password2:
           type: string
           writeOnly: true
-          minLength: 1
       required:
       - password
       - password2
@@ -2679,79 +2495,6 @@ components:
           type: boolean
         language:
           type: string
-          maxLength: 10
-    UserUpdateRequest:
-      type: object
-      properties:
-        first_name:
-          type: string
-          maxLength: 150
-        last_name:
-          type: string
-          maxLength: 150
-        bio:
-          type: string
-          nullable: true
-          maxLength: 500
-        profession:
-          type: string
-          nullable: true
-          maxLength: 200
-        company:
-          type: string
-          nullable: true
-          maxLength: 200
-        location:
-          type: string
-          nullable: true
-          maxLength: 200
-        website:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        github:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        linkedin:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        twitter:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        instagram:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        facebook:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        youtube:
-          type: string
-          format: uri
-          nullable: true
-          maxLength: 200
-        phone_number:
-          type: string
-          nullable: true
-          pattern: ^\+?1?\d{9,15}$
-          maxLength: 20
-        email_notifications:
-          type: boolean
-        dark_mode_default:
-          type: boolean
-        language:
-          type: string
-          minLength: 1
           maxLength: 10
   securitySchemes:
     jwtAuth:

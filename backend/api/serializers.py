@@ -65,3 +65,12 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'name', 'email', 'comment', 'created_at']
+        
+
+class DashboardStatsSerializer(serializers.Serializer):
+    projects = serializers.IntegerField()
+    skills = serializers.IntegerField()
+    testimonials = serializers.IntegerField()
+    experiences = serializers.IntegerField()
+    education = serializers.IntegerField()
+    messages = serializers.IntegerField()

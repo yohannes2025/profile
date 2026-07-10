@@ -5,6 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from django.core.cache import cache
 from django.conf import settings
+from .serializers import DashboardStatsSerializer
 
 import datetime
 import os
@@ -453,17 +454,22 @@ class ContactCreateView(generics.CreateAPIView):
 # DASHBOARD
 # =============================================================================
 class DashboardStatsView(generics.GenericAPIView):
+    serializer_class = DashboardStatsSerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        return Response({
+        data = {
             "projects": Project.objects.count(),
             "skills": Skill.objects.count(),
             "testimonials": Testimonial.objects.count(),
             "experiences": Experience.objects.count(),
             "education": Education.objects.count(),
             "messages": ContactMessage.objects.count(),
-        })
+        }
+
+        serializer = self.get_serializer(data)
+
+        return Response(serializer.data)
 
 
 # =============================================================================
@@ -485,3 +491,5 @@ def health_check(request):
 @permission_classes([AllowAny])
 def test_post(request):
     return Response({"message": "POST works", "data": request.data})
+
+
