@@ -38,6 +38,10 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 # SECURITY SETTINGS (Production)
 # ==============================================================================
 
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
+
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
