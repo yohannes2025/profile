@@ -104,11 +104,11 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     
-    'cloudinary_storage',
-    'cloudinary',
-    
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',
+    
+    'cloudinary_storage',
+    'cloudinary',
 
     'rest_framework',
     'rest_framework_simplejwt',
