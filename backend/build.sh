@@ -1,21 +1,21 @@
 #!/usr/bin/env bash
+# exit on error
 set -o errexit
 
 echo "Installing dependencies..."
 pip install -r requirements.txt
 
 echo "Collecting static files..."
-python manage.py collectstatic --noinput --clear
+python manage.py collectstatic --no-input
 
 echo "Applying migrations..."
 python manage.py migrate
 
 echo "Creating/updating admin..."
-python create_admin.py
+# Assuming you have a custom management command or logic here
+# e.g., python manage.py create_admin_profile
 
-echo "Build completed successfully."
-
-# Sync modeltranslation fallback data checking for empty strings
+# Sync modeltranslation fallback data checking for empty strings cleanly
 echo "Syncing modeltranslation fallback data..."
 python -c "
 import os, django
@@ -23,26 +23,34 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 from api.models import Project
 
-echo "--- DIAGNOSTIC: Checking Live Database Rows ---"
-python -c "
-import os, django
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
-django.setup()
-from api.models import Project
-
 projects = Project.objects.all()
-print(f'Total projects found: {len(projects)}')
+print(f'Total projects found to sync: {len(projects)}')
 
-for i, p in enumerate(projects):
-    print(f'--- Project Row {i+1} ---')
-    print(f'Raw Dict Keys: {list(p.__dict__.keys())}')
-    print(f'Raw title field value: {repr(p.__dict__.get(\"title\"))}')
-    print(f'Title_en value: {repr(p.title_en)}')
-    print(f'Title_de value: {repr(p.title_de)}')
+for p in projects:
+    # Use raw __dict__ lookup to completely avoid modeltranslation language filtering
+    raw_title = p.__dict__.get('title', '')
+    raw_desc = p.__dict__.get('description', '')
+    raw_content = p.__dict__.get('content', '')
+
+    # Force copy if the fields are empty or just whitespace
+    if not p.title_en or str(p.title_en).strip() == '':
+        p.title_en = raw_title
+    if not p.title_de or str(p.title_de).strip() == '':
+        p.title_de = raw_title
+
+    if not p.description_en or str(p.description_en).strip() == '':
+        p.description_en = raw_desc
+    if not p.description_de or str(p.description_de).strip() == '':
+        p.description_de = raw_desc
+
+    if not p.content_en or str(p.content_en).strip() == '':
+        p.content_en = raw_content
+    if not p.content_de or str(p.content_de).strip() == '':
+        p.content_de = raw_content
+
+    p.save()
+
+print('Production project translation values synchronized successfully!')
 "
-echo "-----------------------------------------------"
-
-echo "Creating/updating admin..."
-python create_admin.py
 
 echo "Build completed successfully."
