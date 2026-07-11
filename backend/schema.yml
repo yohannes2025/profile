@@ -516,7 +516,11 @@ paths:
       - jwtAuth: []
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PortfolioDashboardStats'
+          description: ''
   /api/education/:
     get:
       operationId: api_education_list
@@ -585,7 +589,7 @@ paths:
           description: ''
   /api/recent-posts/:
     get:
-      operationId: api_recent_posts_retrieve
+      operationId: api_recent_posts_list
       description: Return latest 3 blog posts
       tags:
       - api
@@ -594,7 +598,61 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BlogPostList'
+          description: ''
+  /api/schema/:
+    get:
+      operationId: api_schema_retrieve
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      parameters:
+      - in: query
+        name: format
+        schema:
+          type: string
+          enum:
+          - json
+          - yaml
+      - in: query
+        name: lang
+        schema:
+          type: string
+          enum:
+          - de
+          - en
+      tags:
+      - api
+      security:
+      - jwtAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/yaml:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/vnd.oai.openapi+json:
+              schema:
+                type: object
+                additionalProperties: {}
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
   /api/skills/:
     get:
       operationId: api_skills_list
@@ -627,7 +685,16 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+          description: ''
   /api/testimonials/:
     get:
       operationId: api_testimonials_list
@@ -715,7 +782,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DashboardStats'
+                $ref: '#/components/schemas/UserDashboardStats'
           description: ''
   /api/users/delete-account/:
     get:
@@ -1163,7 +1230,16 @@ paths:
       - {}
       responses:
         '200':
-          description: No response body
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  timestamp:
+                    type: string
+          description: ''
 components:
   schemas:
     ActivityTypeEnum:
@@ -1279,8 +1355,6 @@ components:
           maxLength: 200
         years_of_experience:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         phone_number:
           type: string
           nullable: true
@@ -1444,8 +1518,6 @@ components:
           readOnly: true
         views:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         published:
           type: boolean
         created_at:
@@ -1520,8 +1592,6 @@ components:
           readOnly: true
         views:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         published:
           type: boolean
         category_name:
@@ -1680,30 +1750,6 @@ components:
       - message
       - name
       - subject
-    DashboardStats:
-      type: object
-      properties:
-        total_projects:
-          type: integer
-        total_blog_posts:
-          type: integer
-        total_views:
-          type: integer
-        total_comments:
-          type: integer
-        profile_views:
-          type: integer
-        recent_activities:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserActivityLog'
-      required:
-      - profile_views
-      - recent_activities
-      - total_blog_posts
-      - total_comments
-      - total_projects
-      - total_views
     Education:
       type: object
       properties:
@@ -1721,18 +1767,12 @@ components:
           maxLength: 200
         start_year:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         end_year:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         description:
           type: string
         order:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
       required:
       - degree
       - end_year
@@ -1777,8 +1817,6 @@ components:
         technologies: {}
         order:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
       required:
       - company
       - description
@@ -2137,6 +2175,28 @@ components:
         language:
           type: string
           maxLength: 10
+    PortfolioDashboardStats:
+      type: object
+      properties:
+        projects:
+          type: integer
+        skills:
+          type: integer
+        testimonials:
+          type: integer
+        experiences:
+          type: integer
+        education:
+          type: integer
+        messages:
+          type: integer
+      required:
+      - education
+      - experiences
+      - messages
+      - projects
+      - skills
+      - testimonials
     Project:
       type: object
       properties:
@@ -2172,8 +2232,6 @@ components:
           type: boolean
         order:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         created_at:
           type: string
           format: date-time
@@ -2226,16 +2284,12 @@ components:
           $ref: '#/components/schemas/CategoryEnum'
         proficiency:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
           description: Percentage 0-100
         icon:
           type: string
           maxLength: 50
         order:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
       required:
       - category
       - id
@@ -2283,8 +2337,6 @@ components:
           type: string
         rating:
           type: integer
-          maximum: 2147483647
-          minimum: -2147483648
         featured:
           type: boolean
         created_at:
@@ -2332,6 +2384,30 @@ components:
       - created_at
       - formatted_time
       - id
+    UserDashboardStats:
+      type: object
+      properties:
+        total_projects:
+          type: integer
+        total_blog_posts:
+          type: integer
+        total_views:
+          type: integer
+        total_comments:
+          type: integer
+        profile_views:
+          type: integer
+        recent_activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserActivityLog'
+      required:
+      - profile_views
+      - recent_activities
+      - total_blog_posts
+      - total_comments
+      - total_projects
+      - total_views
     UserLogin:
       type: object
       properties:

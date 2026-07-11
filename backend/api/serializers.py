@@ -67,7 +67,7 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'email', 'comment', 'created_at']
         
 
-class DashboardStatsSerializer(serializers.Serializer):
+class PortfolioDashboardStatsSerializer(serializers.Serializer):
     projects = serializers.IntegerField()
     skills = serializers.IntegerField()
     testimonials = serializers.IntegerField()

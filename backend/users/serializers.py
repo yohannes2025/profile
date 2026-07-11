@@ -249,7 +249,7 @@ class ResumeUploadSerializer(serializers.Serializer):
         return value
 
 
-class DashboardStatsSerializer(serializers.Serializer):
+class UserDashboardStatsSerializer(serializers.Serializer):
     total_projects = serializers.IntegerField()
     total_blog_posts = serializers.IntegerField()
     total_views = serializers.IntegerField()

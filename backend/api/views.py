@@ -5,7 +5,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, throttle_classes
 from django.core.cache import cache
 from django.conf import settings
-from .serializers import DashboardStatsSerializer
+from .serializers import PortfolioDashboardStatsSerializer
+from drf_spectacular.utils import extend_schema
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import extend_schema
 
 import datetime
 import os
@@ -356,6 +359,9 @@ def send_contact_email_task(name, email, subject, message, language='en'):
 # =============================================================================
 # BLOG POSTS (FIXED IMPORT ISSUE)
 # =============================================================================
+@extend_schema(
+    responses=BlogPostListSerializer(many=True)
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def recent_blog_posts(request):
@@ -454,7 +460,7 @@ class ContactCreateView(generics.CreateAPIView):
 # DASHBOARD
 # =============================================================================
 class DashboardStatsView(generics.GenericAPIView):
-    serializer_class = DashboardStatsSerializer
+    serializer_class = PortfolioDashboardStatsSerializer
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -475,6 +481,17 @@ class DashboardStatsView(generics.GenericAPIView):
 # =============================================================================
 # HEALTH CHECK
 # =============================================================================
+@extend_schema(
+    responses={
+        200: {
+            "type": "object",
+            "properties": {
+                "status": {"type": "string"},
+                "timestamp": {"type": "string"}
+            }
+        }
+    }
+)
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def health_check(request):
@@ -487,6 +504,18 @@ def health_check(request):
 # =============================================================================
 # TEST ENDPOINT
 # =============================================================================
+@extend_schema(
+    request=None,
+    responses={
+        200: {
+            "type": "object",
+            "properties": {
+                "message": {"type": "string"},
+                "data": {"type": "object"}
+            }
+        }
+    }
+)
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def test_post(request):

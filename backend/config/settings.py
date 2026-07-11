@@ -158,14 +158,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 # ==============================================================================
-# DATABASE (SQLite for now)
+# DATABASE
 # ==============================================================================
 DATABASES = {
     "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
-        ssl_require=not DEBUG
     )
 }
+
+if "postgres" in DATABASES["default"]["ENGINE"]:
+    DATABASES["default"]["OPTIONS"] = {
+        "sslmode": "require",
+    }
 
 AUTH_USER_MODEL = 'users.User'
 

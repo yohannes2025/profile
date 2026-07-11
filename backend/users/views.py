@@ -28,7 +28,7 @@ from .serializers import (
     UserUpdateSerializer, ChangePasswordSerializer, ForgotPasswordSerializer,
     ResetPasswordSerializer, EmailVerificationSerializer, UserSessionSerializer,
     UserActivityLogSerializer, TokenSerializer, AvatarUploadSerializer,
-    ResumeUploadSerializer, DashboardStatsSerializer, UserProfileSerializer
+    ResumeUploadSerializer, UserDashboardStatsSerializer, UserProfileSerializer
 )
 from api.models import Project, ContactMessage
 from blog.models import BlogPost, Comment
@@ -530,10 +530,10 @@ class DashboardStatsView(APIView):
     Get dashboard statistics for authenticated user
     """
     permission_classes = [IsAuthenticated]
-    serializer_class = DashboardStatsSerializer
+    serializer_class = UserDashboardStatsSerializer
     
     @extend_schema(
-        responses={200: DashboardStatsSerializer},
+        responses={200: UserDashboardStatsSerializer},
         description="Gathers analytical aggregation parameters across system assets linked with metrics data profiles."
     )
     def get(self, request):
@@ -555,7 +555,7 @@ class DashboardStatsView(APIView):
             
             cache.set(cache_key, stats, 60 * 5)  # 5 minutes cache
         
-        serializer = DashboardStatsSerializer(stats)
+        serializer = UserDashboardStatsSerializer(stats)
         return Response(serializer.data)
 
 
