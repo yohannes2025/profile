@@ -1,13 +1,17 @@
 # backend/api/admin.py
 from django.contrib import admin
+from modeltranslation.admin import TranslationAdmin
 from .models import Project, Skill, Testimonial, Experience, Education, ContactMessage
 
 @admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('title', 'featured', 'order', 'created_at')
+class ProjectAdmin(TranslationAdmin):
+    # Display the split fields cleanly in the list view
+    list_display = ('title_en', 'title_de', 'featured', 'order', 'created_at')
     list_filter = ('featured', 'technologies')
-    search_fields = ('title', 'description')
-    prepopulated_fields = {'slug': ('title',)}
+    search_fields = ('title_en', 'title_de', 'description_en', 'description_de')
+    
+    # Use the original field names here; modeltranslation will map them behind the scenes
+    prepopulated_fields = {'slug': ('title',)} 
     list_editable = ('featured', 'order')
 
 @admin.register(Skill)

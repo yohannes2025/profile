@@ -96,8 +96,8 @@ CSRF_TRUSTED_ORIGINS = [
 # APPLICATIONS
 # ==============================================================================
 INSTALLED_APPS = [
-    #'modeltranslation',
-    #'jazzmin',
+    'modeltranslation',
+    'jazzmin',
     "django.contrib.admin",
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -212,6 +212,14 @@ STORAGES = {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
+
+# 👇 ADD THIS LINE RIGHT HERE FOR CKEDITOR COMPATIBILITY
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+
+# Tell modeltranslation how to handle django-ckeditor-5 fields
+MODELTRANSLATION_CUSTOM_FIELDS = (
+    'CKEditor5Field',
+)
 
 #WHITENOISE_SKIP_COMPRESS_EXTENSIONS = (
 #    "css",
@@ -394,6 +402,11 @@ cloudinary.config(
 
 
 # Explicitly declare available translation options
+LANGUAGE_CODE = 'en' # Default language
+TIME_ZONE = 'UTC'
+USE_I18N = True
+USE_TZ = True    
+
 LANGUAGES = [
     ('en', 'English'),
     ('de', 'German'),
