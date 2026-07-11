@@ -4,13 +4,17 @@ from rest_framework import serializers
 from drf_spectacular.utils import extend_schema_field
 from .models import Project, Skill, Testimonial, Experience, Education, ContactMessage
 from blog.models import BlogPost, Category, Tag, Comment
-
 class ProjectSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
+    
+    # 💡 Explicitly declare these as CharFields so DRF handles CKEditor translation fields without crashing
+    description_en = serializers.CharField(allow_blank=True, required=False)
+    description_de = serializers.CharField(allow_blank=True, required=False)
+    content_en = serializers.CharField(allow_blank=True, required=False)
+    content_de = serializers.CharField(allow_blank=True, required=False)
 
     class Meta:
         model = Project
-        # 💡 Reverting to "__all__" avoids typos or missing model fields
         fields = "__all__"
 
     @extend_schema_field(serializers.URLField(allow_null=True))
